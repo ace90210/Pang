@@ -24,6 +24,7 @@ import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
+import com.games.androidgames.pang.elements.MainMenuButton;
 import com.games.androidgames.pang.elements.MenuButton;
 import com.games.androidgames.pang.elements.MuteButton;
 import com.games.androidgames.pang.elements.SettingsButton;
@@ -61,7 +62,7 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 		items.add(new SettingsButton("setting 2", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 2, camera.zoom));
 		items.get(1).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
 		
-		items.add(new SettingsButton("setting 3", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4, camera.zoom));
+		items.add(new MainMenuButton("Back", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4, camera.zoom));
 		items.get(2).setAltRGBA(0.0f, 1.0f, 0.3f, 1.0f);
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
@@ -158,7 +159,7 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 		                {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
-				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
+				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){				                		
 				                		item1.action(game);	
 				                		item1.heightLighted = false;
 				                    }

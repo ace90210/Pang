@@ -6,12 +6,12 @@ import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 
 public abstract class MenuButton {
-	protected Vector2 position;
+	protected final Vector2 position;
 	public Rectangle bounds;
 	public float r, g, b ,a, altR, altG, altB, altA, scale;
 	public String text;
 	public boolean heightLighted;
-	private GLText glText;
+	private final GLText glText;
 	
 	public MenuButton(String text, GLText glText, float x, float y, float r, float g, float b, float a, float scale){
 		this.text = text;
@@ -31,6 +31,7 @@ public abstract class MenuButton {
 	
 	public MenuButton(String text, GLText glText, float x, float y, float scale){
 		this.text = text;
+		this.position = new Vector2(x, y);
 		this.r = 1;
 		this.g = 1;
 		this.b = 1;
@@ -40,6 +41,7 @@ public abstract class MenuButton {
 		this.altB = 0.0f;
 		this.altA = 1.0f;
 		this.scale = scale;
+		this.glText = glText;	
 		glText.setScale(scale);
 		float width = glText.getLength(text) ;
 		this.bounds = new Rectangle(x - width / 2, y, width , glText.getHeight());

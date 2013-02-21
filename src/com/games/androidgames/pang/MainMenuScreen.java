@@ -77,17 +77,18 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		batcher.beginBatch(Resources.background);
 		batcher.drawSprite(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, Resources.backgroundRegion);
 		batcher.endBatch();
-		
-		for(MenuButton item1: items) {
-			glText.setScale(item1.scale);
-			if(item1.heightLighted){
-				glText.begin(item1.altR, item1.altG, item1.altB, item1.altA);
-				glText.draw(item1.text, item1.bounds.lowerLeft.x , item1.bounds.lowerLeft.y);
-				glText.end();
-			} else {
-				glText.begin(item1.r, item1.g, item1.b, item1.a);
-				glText.draw(item1.text, item1.bounds.lowerLeft.x , item1.bounds.lowerLeft.y);
-				glText.end();
+		synchronized(this){
+			for(MenuButton item1: items) {
+				glText.setScale(item1.scale);
+				if(item1.heightLighted){
+					glText.begin(item1.altR, item1.altG, item1.altB, item1.altA);
+					glText.draw(item1.text, item1.bounds.lowerLeft.x , item1.bounds.lowerLeft.y);
+					glText.end();
+				} else {
+					glText.begin(item1.r, item1.g, item1.b, item1.a);
+					glText.draw(item1.text, item1.bounds.lowerLeft.x , item1.bounds.lowerLeft.y);
+					glText.end();
+				}
 			}
 		}
 		

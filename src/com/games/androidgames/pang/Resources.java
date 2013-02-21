@@ -78,14 +78,20 @@ public class Resources {
     }
 	
 	public static void playSound(int sound) {
-		sounds.play(sound, 1.0f, 1.0f, 0, 0, 1.0f);
+		if(!Settings.mute){
+			sounds.play(sound, 1.0f, 1.0f, 0, 0, 1.0f);
+		}
 	}	
 	
 	public static void playSound(int sound, float volume) {
-		sounds.play(sound, volume, volume, 0, 0, 1.0f);
+		if(!Settings.mute){
+			sounds.play(sound, volume, volume, 0, 0, 1.0f);
+		}
 	}
 	
 	public static void playSound(int sound, float left, float right) {
-		sounds.play(sound, left, right, 0, 0, 1.0f);
+		if(!Settings.mute){
+			sounds.play(sound, left, right, 0, 0, 1.0f);
+		}
 	}
 }
