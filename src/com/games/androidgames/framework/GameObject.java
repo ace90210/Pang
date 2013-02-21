@@ -1,10 +1,11 @@
 package com.games.androidgames.framework;
 
+import java.util.List;
 import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Circle;
 import com.games.androidgames.framework.math.Vector2;
 
-public class GameObject {
+public abstract class GameObject {
 	public final Vector2 position;
 	public Rectangle bounds;
 	public final Circle boundingCircle;
@@ -24,4 +25,6 @@ public class GameObject {
 	public void updateBounds(float x, float y, float width, float height) {
 		this.bounds = new Rectangle(x-width/2, y-height/2, width, height);
 	}
+	
+	public abstract boolean collision(List<GameObject> ... objects);
 }

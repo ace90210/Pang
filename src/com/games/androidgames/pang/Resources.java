@@ -19,16 +19,18 @@ public class Resources {
 	public static int FIRE, POP, STICK, HIT, BUTTON_HEIGHTLIGHT;
 	public static Texture background;
 	public static Texture gameItems;
-	public static GLText glText;
+	public static GLText glText, glButtonText;
 	
 	public static TextureRegion backgroundRegion;
 	public static TextureRegion ball;
 	public static TextureRegion platform;
 	public static TextureRegion ladder;
-	public static TextureRegion stickSpear;
-
+	public static TextureRegion stickySpear;
+	public static TextureRegion normalSpear;
+	
 	public static TextureRegion playerShooting;
 	public static TextureRegion playerStanding;
+	public static TextureRegion playerHurt;
 	
 	public static TextureRegion powerupSingle;
 	public static TextureRegion powerupDouble;
@@ -43,8 +45,8 @@ public class Resources {
 	public static Animation playerWalkLeft;
 	public static Animation playerWalkRight;
 	public static Animation playerClimb;
-	public static Animation spearNormal;
-	public static Animation spearSticky;
+	public static Animation animNormalSpear;
+	public static Animation animStickySpear;
 	
 	public static void load(GLGame game){
 		game.setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -66,12 +68,66 @@ public class Resources {
 		
 		backgroundRegion = new TextureRegion(background, 0, 0, 512, 256);
 		
+		ball = new TextureRegion(gameItems, 0, 0, 128, 128);
+		powerupSingle =  new TextureRegion(gameItems, 50, 133, 8, 16);
+		powerupDouble = new TextureRegion(gameItems, 50, 133, 16, 16);
+		powerupSticky = new TextureRegion(gameItems, 31, 133, 13, 16);
+		
+		normalSpear = new TextureRegion(gameItems, 368,  0, 9, 245);
+		stickySpear =  new TextureRegion(gameItems, 453,  0, 9, 245);
+		animNormalSpear =  new Animation( 0.01f,
+				  new TextureRegion(gameItems, 261,   0, 9, 245),
+				  new TextureRegion(gameItems, 279,  0, 9, 245),
+				  new TextureRegion(gameItems, 297,  0, 9, 245),
+				  new TextureRegion(gameItems, 315, 0, 9, 245),
+				  new TextureRegion(gameItems, 333,  0, 9, 245),
+				  new TextureRegion(gameItems, 351, 0, 9, 245),
+				  new TextureRegion(gameItems, 368,  0, 9, 245));
+		
+		animStickySpear = new Animation( 0.01f,
+				  new TextureRegion(gameItems, 262,   247, 9, 245),
+				  new TextureRegion(gameItems, 280,  247, 9, 245),
+				  new TextureRegion(gameItems, 298,  247, 9, 245),
+				  new TextureRegion(gameItems, 316, 247, 9, 245),
+				  new TextureRegion(gameItems, 334,  247, 9, 245),
+				  new TextureRegion(gameItems, 352, 247, 9, 245),
+				  new TextureRegion(gameItems, 369,  247, 9, 245));
+		
+		playerWalkLeft = new Animation( 0.1f,
+				  new TextureRegion(gameItems, 0,   349, 26, 33),
+				  new TextureRegion(gameItems, 36,  349, 26, 33),
+				  new TextureRegion(gameItems, 68,  349, 26, 33),
+				  new TextureRegion(gameItems, 101, 349, 26, 33),
+				  new TextureRegion(gameItems, 98,  317, 26, 33));
+		playerWalkRight = new Animation( 0.1f,
+					  new TextureRegion(gameItems, 0,   248, 26, 33),
+					  new TextureRegion(gameItems, 34,  248, 26, 33),
+					  new TextureRegion(gameItems, 69,  248, 26, 33),
+					  new TextureRegion(gameItems, 103, 247, 26, 33),
+					  new TextureRegion(gameItems, 1,   282, 26, 33));
+		playerClimb =    new Animation( 0.2f,
+					  new TextureRegion(gameItems, 163, 248, 26, 33),
+					  new TextureRegion(gameItems, 69,  281, 26, 33),
+					  new TextureRegion(gameItems, 1,   316, 26, 33));
+		playerStanding = new TextureRegion(gameItems, 68, 350, 26, 33);
+		playerShooting = new TextureRegion(gameItems, 33, 280, 26, 33);
+		playerHurt = new TextureRegion(gameItems, 196, 251, 26, 33);
+		
+		controlsA = new TextureRegion(gameItems, 128, 0, 64, 64); 
+		controlsB = new TextureRegion(gameItems, 192, 0, 64, 64);
+		controlsStart = new TextureRegion(gameItems, 194, 69, 63, 26);
+		controlsJoystick = new TextureRegion(gameItems, 194, 130, 62, 63); 
+		
 		glText = new GLText( game.getGLGraphics().getGL(), game.getAssets() );
-		glText.load( "AgentOrange.ttf", 28, 2, 2 ); 
+		glButtonText = new GLText( game.getGLGraphics().getGL(), game.getAssets() );
+		
+		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
+		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
 	}
 	
 	public static void reload() {
-		glText.load( "AgentOrange.ttf", 28, 2, 2 ); 
+		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
+		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
         background.reload();
         gameItems.reload();
         

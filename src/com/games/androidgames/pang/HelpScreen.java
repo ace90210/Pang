@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-
-import android.view.MenuItem;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,23 +13,17 @@ import com.games.androidgames.framework.impl.GLGame;
 import com.games.androidgames.framework.impl.GLGraphics;
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Input.TouchEvent;
-import com.games.androidgames.framework.Pool;
 import com.games.androidgames.framework.Screen;
 import com.games.androidgames.framework.Game;
-import com.games.androidgames.framework.impl.TouchHandler;
 import com.games.androidgames.framework.math.OverlapTester;
-import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
 import com.games.androidgames.pang.buttons.BlankButton;
 import com.games.androidgames.pang.buttons.MainMenuButton;
 import com.games.androidgames.pang.buttons.MenuButton;
-import com.games.androidgames.pang.buttons.MuteButton;
-import com.games.androidgames.pang.buttons.SettingsButton;
-import com.games.androidgames.pang.buttons.TouchVisibleButton;
 
-public class SettingsScreen extends Screen implements OnTouchListener {
+public class HelpScreen extends Screen implements OnTouchListener {
 	private static int SPRITE_LIMIT = 100;
 	private static float WORLD_WIDTH = 840, WORLD_HEIGHT = 460;
 	
@@ -45,7 +37,7 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 	private SpriteBatcher batcher;
 	
 	
-	public SettingsScreen(Game game){
+	public HelpScreen(Game game){
 		super(game);
 		glGraphics = ((GLGame)game).getGLGraphics();
 		glGraphics.getView().setOnTouchListener(this);
@@ -54,28 +46,11 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
 
 		items = new ArrayList<MenuButton>();
-		
-		items.add(new BlankButton("Settings Menu", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
-		String touch;
-		if(Settings.displayTouchControls) {
-			touch = "Show Touch Controls";
-		} else {
-			touch = "Hide Touch Controls";
-		}
-		items.add(new TouchVisibleButton(touch, glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 4, camera.zoom));
-		items.get(1).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
-		
-		String mute;
-		if(Settings.mute) {
-			mute = "un-mute";
-		} else {
-			mute = "mute";
-		}
-		items.add(new MuteButton(mute, glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 3, camera.zoom));
+
+		items.add(new BlankButton("help screen", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 3, camera.zoom));
+		items.add(new BlankButton("Some help Text", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 2, camera.zoom));
+		items.add(new MainMenuButton("back", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 , camera.zoom));
 		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
-		
-		items.add(new MainMenuButton("Back", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4, camera.zoom));
-		items.get(3).setAltRGBA(0.0f, 1.0f, 0.3f, 1.0f);
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
@@ -156,7 +131,7 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
 			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i),  glGraphics.getHeight() - event.getY(i)))){
-			                			if(item1.heightLighted == false && item1.soundEnabled) {
+			                			if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				item1.heightLighted = true;
 			                			}			                    	
@@ -184,7 +159,7 @@ public class SettingsScreen extends Screen implements OnTouchListener {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
 				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
-				                		if(item1.heightLighted == false  && item1.soundEnabled) {
+				                		if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				item1.heightLighted = true;
 			                			}

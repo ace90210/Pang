@@ -24,8 +24,11 @@ import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
-import com.games.androidgames.pang.elements.MenuButton;
-import com.games.androidgames.pang.elements.SettingsButton;
+import com.games.androidgames.pang.buttons.BlankButton;
+import com.games.androidgames.pang.buttons.GameButton;
+import com.games.androidgames.pang.buttons.HelpButton;
+import com.games.androidgames.pang.buttons.MenuButton;
+import com.games.androidgames.pang.buttons.SettingsButton;
 
 public class MainMenuScreen extends Screen implements OnTouchListener {
 	private static int SPRITE_LIMIT = 100;
@@ -46,14 +49,18 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		glGraphics = ((GLGame)game).getGLGraphics();
 		glGraphics.getView().setOnTouchListener(this);
 		gl = glGraphics.getGL();
-		glText = Resources.glText;
+		glText = Resources.glButtonText;
 		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
 
 		items = new ArrayList<MenuButton>();
-		items.add(new SettingsButton("Hello Test", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 2, camera.zoom * 1.5f));
+		items.add(new BlankButton("Pang", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
+		
+		items.add(new GameButton("Start", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		
+		items.add(new SettingsButton("Settings", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 1.5f, camera.zoom * 1.5f));
 
-		items.add(new SettingsButton("Button 2 Test", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 3, camera.zoom));
-		items.get(1).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
+		items.add(new HelpButton("Help", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4, camera.zoom));
+		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
 	
@@ -133,7 +140,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		                {
 		                	for(MenuButton item1: items) {
 		                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i),  glGraphics.getHeight() - event.getY(i)))){
-		                			if(item1.heightLighted == false) {
+		                			if(item1.heightLighted == false  && item1.soundEnabled) {
 		                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 		                				item1.heightLighted = true;
 		                			}			                    	
@@ -156,7 +163,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		                {
 		                	for(MenuButton item1: items) {
 			                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
-			                		if(item1.heightLighted == false) {
+			                		if(item1.heightLighted == false  && item1.soundEnabled) {
 		                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 		                				item1.heightLighted = true;
 		                			}

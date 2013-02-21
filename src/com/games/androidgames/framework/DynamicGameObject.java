@@ -2,7 +2,7 @@ package com.games.androidgames.framework;
 
 import com.games.androidgames.framework.math.Vector2;
 
-public class DynamicGameObject extends GameObject {
+public abstract class DynamicGameObject extends GameObject {
 	public final Vector2 velocity;
 	public final Vector2 accel;
 	
