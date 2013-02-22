@@ -13,6 +13,7 @@ public class BlankButton extends MenuButton {
 		this.altB = this.b;
 		this.altA = this.a;
 		this.soundEnabled = false;
+		this.enabled = false;
 	}
 
 	@Override

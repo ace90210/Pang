@@ -16,22 +16,4 @@ public class Ball extends DynamicGameObject{
 	public Ball(float x, float y, float radius) {
 		super(x, y, radius);
 	}
-
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		boolean collision = false;
-		if(bounds.lowerLeft.y <= 0) {
-			position.y = bounds.height / 2;
-			collision = true;
-		}
-		for(List<GameObject> objectList: objects) {
-			for(GameObject object: objectList) {
-				if(OverlapTester.overlapRectangle(this.bounds, object.bounds)) {
-					collision = true;
-				}			
-			}	
-		}
-		return collision;
-	}
-
 }

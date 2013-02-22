@@ -74,13 +74,15 @@ public class Spear extends DynamicGameObject {
 	}
 	
 	public void stop() {
-		activeTime = life;		
-		if(activeTime <= 0) {
-			stick = false;
-			alive = false;
-		} else {
-			stick = true;
-			Resources.playSound(Resources.STICK);
+		if(alive){
+			activeTime = life;		
+			if(activeTime <= 0) {
+				stick = false;
+				alive = false;
+			} else {
+				stick = true;
+				Resources.playSound(Resources.STICK);
+			}
 		}
 	}
 	
@@ -88,16 +90,4 @@ public class Spear extends DynamicGameObject {
 		alive = false;
 	}
 
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		boolean collision = false;
-		for(List<GameObject> objectList: objects) {
-			for(GameObject object: objectList) {
-				if(OverlapTester.overlapRectangle(this.bounds, object.bounds)) {					
-					collision = true;
-				}			
-			}	
-		}
-		return collision;
-	}
 }

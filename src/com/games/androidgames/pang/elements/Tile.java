@@ -10,11 +10,4 @@ public class Tile extends GameObject {
 		super(x, y, width, height);
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

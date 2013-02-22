@@ -10,7 +10,7 @@ public abstract class MenuButton {
 	public Rectangle bounds;
 	public float r, g, b ,a, altR, altG, altB, altA, scale;
 	public String text;
-	public boolean heightLighted, soundEnabled;
+	public boolean heightLighted, soundEnabled, enabled;
 	private final GLText glText;
 	
 	public MenuButton(String text, GLText glText, float x, float y, float r, float g, float b, float a, float scale){
@@ -27,7 +27,8 @@ public abstract class MenuButton {
 		this.altB = 0.0f;
 		this.altA = 1.0f;
 		this.scale = scale;
-		this.glText = glText;		
+		this.glText = glText;
+		this.enabled = true;
 		setRectangle(x, y);
 	}
 	
@@ -46,6 +47,7 @@ public abstract class MenuButton {
 		this.altA = 1.0f;
 		this.scale = scale;
 		this.glText = glText;	
+		this.enabled = true;
 		glText.setScale(scale);
 		float width = glText.getLength(text) ;
 		this.bounds = new Rectangle(x - width / 2, y, width , glText.getHeight());

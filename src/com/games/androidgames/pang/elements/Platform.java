@@ -29,27 +29,4 @@ public class Platform extends GameObject {
 			tiles.add(new Tile((position.x - width / 2) + remainder, position.y, TILE_WIDTH, height));
 		}
 	}
-
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		boolean collision = false;
-		if(bounds.lowerLeft.y <= 0) {
-			position.y = bounds.height / 2;
-			collision = true;
-		}
-		for(List<GameObject> objectList: objects) {
-			for(GameObject object: objectList) {
-				if(object.position.x + object.bounds.width / 4 > bounds.lowerLeft.x && object.position.x - object.bounds.width / 4 < bounds.lowerLeft.x + bounds.width) {
-					if(object.position.y - object.bounds.height / 2 <= (position.y + bounds.height / 4) + 2 ) {
-						if(object.position.y - object.bounds.height / 2 > (position.y + bounds.height / 2) - 10) {	//buffer of 10 pixels and 2 pixels
-							object.position.y = position.y + bounds.height / 2 + object.bounds.height / 2;		//update position and bounds
-							bounds.lowerLeft.set(object.position.x - object.bounds.width / 2, object.position.y - object.bounds.height / 2);
-							collision = true;
-						}
-					}
-				}			
-			}	
-		}
-		return collision;
-	}
 }

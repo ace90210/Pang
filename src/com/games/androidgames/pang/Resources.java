@@ -150,4 +150,10 @@ public class Resources {
 			sounds.play(sound, left, right, 0, 0, 1.0f);
 		}
 	}
+	
+	public static void unload(){
+		sounds.release();
+		background.dispose();
+		gameItems.dispose();
+	}
 }

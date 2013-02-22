@@ -46,7 +46,6 @@ public class PowerItem extends DynamicGameObject {
 		updateBounds(pos.x, pos.y, bounds.width, bounds.height);
 	}
 
-	@Override
 	public boolean collision(List<GameObject> ... objects) {
 		boolean collision = false;
 		if(bounds.lowerLeft.y <= 0) {

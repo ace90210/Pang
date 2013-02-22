@@ -6,8 +6,10 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View.OnTouchListener;
+import android.view.View.OnKeyListener;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,12 +27,14 @@ import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
 import com.games.androidgames.pang.buttons.BlankButton;
+import com.games.androidgames.pang.buttons.CloseButton;
 import com.games.androidgames.pang.buttons.GameButton;
 import com.games.androidgames.pang.buttons.HelpButton;
 import com.games.androidgames.pang.buttons.MenuButton;
 import com.games.androidgames.pang.buttons.SettingsButton;
+import com.games.androidgames.pang.elements.Weapon;
 
-public class MainMenuScreen extends Screen implements OnTouchListener {
+public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchListener {
 	private static int SPRITE_LIMIT = 100;
 	private static float WORLD_WIDTH = 840, WORLD_HEIGHT = 460;
 	
@@ -39,6 +43,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 	private GL10 gl;
 	private GLText glText;
 	
+	private int selectedMenu;
 	
 	private List<MenuButton> items;
 	private SpriteBatcher batcher;
@@ -48,19 +53,25 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		super(game);
 		glGraphics = ((GLGame)game).getGLGraphics();
 		glGraphics.getView().setOnTouchListener(this);
+		glGraphics.getView().setOnKeyListener(this);
 		gl = glGraphics.getGL();
 		glText = Resources.glButtonText;
 		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
 
+		selectedMenu = -1;
 		items = new ArrayList<MenuButton>();
-		items.add(new BlankButton("Pang", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
+		items.add(new BlankButton("Pang", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
 		
-		items.add(new GameButton("Start", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		items.add(new GameButton("Start", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
 		
-		items.add(new SettingsButton("Settings", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 1.5f, camera.zoom * 1.5f));
-
-		items.add(new HelpButton("Help", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4, camera.zoom));
+		items.add(new SettingsButton("Settings", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
 		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
+		
+		items.add(new HelpButton("Help", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
+		items.get(3).setAltRGBA(0.0f, 1.0f, 0.2f, 1.0f);
+		
+		items.add(new CloseButton("Quit", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6, camera.zoom * 1.5f));
+		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
 	
@@ -68,7 +79,12 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 	public void update(float deltaTime) {
 		game.getInput().getKeyEvents();		
 		game.getInput().getTouchEvents();
-		
+		if(selectedMenu != -1){
+			for(int i = 0; i < items.size(); i++){
+				items.get(i).heightLighted = false;
+			}
+			items.get(selectedMenu).heightLighted = true;
+		}
 	}
 
 	@Override
@@ -142,6 +158,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i),  glGraphics.getHeight() - event.getY(i)))){
 		                			if(item1.heightLighted == false  && item1.soundEnabled) {
 		                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+		                				selectedMenu = -1;
 		                				item1.heightLighted = true;
 		                			}			                    	
 			                    } 
@@ -153,7 +170,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 		                case MotionEvent.ACTION_CANCEL:
 		                {
 		                	for(MenuButton item1: items) {
-			                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
+			                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i))) && item1.enabled){
 			                		item1.action(game);			                    	
 			                    }
 		                	}
@@ -165,6 +182,7 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 			                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
 			                		if(item1.heightLighted == false  && item1.soundEnabled) {
 		                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+		                				selectedMenu = -1;
 		                				item1.heightLighted = true;
 		                			}
 			                    } else {
@@ -177,5 +195,98 @@ public class MainMenuScreen extends Screen implements OnTouchListener {
 	            return true;
 	        }
 	    }
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		boolean validKey = true;
+		
+		if(event.getAction() == KeyEvent.ACTION_DOWN) {
+			switch(event.getKeyCode())
+			{
+				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x
+														items.get(selectedMenu).action(game);	
+						                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+													}
+												break;
+					case KeyEvent.KEYCODE_BACK:  {
+													//Circle Pressed		
+													selectedMenu = -1;
+													for(int i = 0; i < items.size(); i++){
+														items.get(i).heightLighted = false;
+													}
+												 }
+												break;
+				case KeyEvent.KEYCODE_BUTTON_X:	{
+														
+												}
+												break;
+				case KeyEvent.KEYCODE_BUTTON_Y: {
+														//Triangle pressed																	
+												}													
+												break;
+				case KeyEvent.KEYCODE_DPAD_UP:  {
+													if(selectedMenu == -1){
+														selectedMenu = items.size() - 1;
+													} 
+													do
+													{
+														if(selectedMenu == 0){
+															selectedMenu = items.size() - 1;
+														} else {
+																selectedMenu--;
+														}
+													}while(!items.get(selectedMenu).enabled);
+													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);		
+												}
+												break;
+				case KeyEvent.KEYCODE_DPAD_DOWN: {
+													if(selectedMenu == -1){
+														selectedMenu = 0;
+													} 
+													do
+													{
+														if(selectedMenu == items.size() - 1){
+															selectedMenu = 0;
+														} else {
+																selectedMenu++;
+														}
+													}while(!items.get(selectedMenu).enabled);												
+													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
+												 }
+												
+												break;
+				case KeyEvent.KEYCODE_DPAD_RIGHT: 	{
+														
+													}
+													
+												break;
+				case KeyEvent.KEYCODE_DPAD_LEFT:  	{
+														
+													}
+												break;
+				case KeyEvent.KEYCODE_BUTTON_SELECT: 
+														{
+															
+														}
+												break;
+				case KeyEvent.KEYCODE_BUTTON_START: 
+													
+												break;
+				case KeyEvent.KEYCODE_BUTTON_L1: 
+												
+												break;
+				case KeyEvent.KEYCODE_BUTTON_R1: 
+												
+												break;
+			}
+		}else if(event.getAction() == KeyEvent.ACTION_UP) {
+			
+		}
+		//catch circle button (prevent back key + alt quiting)
+		if(!event.isAltPressed()) {
+			validKey = false;
+		}
+		return validKey;
+	}
 
 }

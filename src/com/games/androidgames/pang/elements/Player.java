@@ -201,21 +201,4 @@ public class Player extends DynamicGameObject {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		boolean collision = false;
-		if(bounds.lowerLeft.y <= 0) {
-			position.y = bounds.height / 2;
-			collision = true;
-		}
-		for(List<GameObject> objectList: objects) {
-			for(GameObject object: objectList) {
-				if(OverlapTester.overlapRectangle(this.bounds, object.bounds)) {
-					collision = true;
-				}			
-			}	
-		}
-		return collision;
-	}
 }

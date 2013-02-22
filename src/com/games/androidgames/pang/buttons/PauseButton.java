@@ -4,22 +4,22 @@ import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
 import com.games.androidgames.pang.Settings;
 
-public class TouchVisibleButton extends MenuButton {
+public class PauseButton extends MenuButton {
 
-	public TouchVisibleButton(String text, GLText glText, float x, float y, float scale) {
+	public PauseButton(String text, GLText glText, float x, float y, float scale) {
 		super(text, glText, x, y, scale);
 		
 	}
 
 	@Override
 	public void action(Game game) {
-		if(Settings.displayTouchControls) {
-			Settings.displayTouchControls = false;
-			this.text = "Show Touch Controls";
+		if(Settings.gamePaused) {
+			Settings.gamePaused = false;
+			this.text = "Resume";
 			this.setRectangle(position.x, position.y);
 		} else {
-			Settings.displayTouchControls = true;
-			this.text = "Hide Touch Controls";
+			Settings.gamePaused = true;
+			this.text = "Pause";
 			this.setRectangle(this.position.x, this.position.y);
 		}
 	}

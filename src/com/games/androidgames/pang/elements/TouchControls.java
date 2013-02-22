@@ -12,6 +12,7 @@ public class TouchControls {
 	public enum ButtonList {STICK, A, B, START };
 	private TextureRegion aRegion, bRegion, startRegion, stickRegion;
 	public boolean[] activeButtons;
+	public int left, right, up, down;
 	
 	public TouchControls(Texture texture, float worldWidth, float worldHeight) {
 		touchElements = new ArrayList<TouchElement>();
@@ -37,6 +38,10 @@ public class TouchControls {
 		touchElements.get(3).setBoundsHeightBuffer(15);
 		touchElements.get(3).setWait(300);	
 		
+		this.left = -1;
+		this.right = -1;
+		this.up = -1;
+		this.down = -1;
 		activeButtons = new boolean[touchElements.size()];
 		resetActiveButtons();
 	}

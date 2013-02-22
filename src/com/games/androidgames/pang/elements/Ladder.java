@@ -49,24 +49,4 @@ public class Ladder extends GameObject {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean collision(List<GameObject>... objects) {
-		boolean collision = false;
-		if(bounds.lowerLeft.y <= 0) {
-			position.y = bounds.height / 2;
-			collision = true;
-		}
-		for(List<GameObject> objectList: objects) {
-			for(GameObject object: objectList) {
-				if( object.position.x - object.bounds.width / 4 < bounds.lowerLeft.x + bounds.width 			&&
-					object.position.x + object.bounds.width / 4 > bounds.lowerLeft.x 							&&
-					object.position.y - object.bounds.height / 2 > bounds.lowerLeft.y 							&&
-					object.position.y + object.bounds.height / 2 < (position.y + bounds.height / 2) + object.bounds.height){
-							collision = true;
-				}
-			}							
-		}
-		return collision;
-	}
 }
