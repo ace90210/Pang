@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-
-import android.view.MenuItem;
 import android.view.View.OnTouchListener;
 import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
@@ -17,12 +15,9 @@ import com.games.androidgames.framework.impl.GLGame;
 import com.games.androidgames.framework.impl.GLGraphics;
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Input.TouchEvent;
-import com.games.androidgames.framework.Pool;
 import com.games.androidgames.framework.Screen;
 import com.games.androidgames.framework.Game;
-import com.games.androidgames.framework.impl.TouchHandler;
 import com.games.androidgames.framework.math.OverlapTester;
-import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
@@ -30,24 +25,23 @@ import com.games.androidgames.pang.buttons.BlankButton;
 import com.games.androidgames.pang.buttons.MainMenuButton;
 import com.games.androidgames.pang.buttons.MenuButton;
 import com.games.androidgames.pang.buttons.MuteButton;
-import com.games.androidgames.pang.buttons.SettingsButton;
-import com.games.androidgames.pang.buttons.TouchVisibleButton;
 
-public class SettingsScreen extends Screen implements OnTouchListener, OnKeyListener {
+public class HighScoresScreen extends Screen implements OnTouchListener, OnKeyListener {
 	private static int SPRITE_LIMIT = 100;
 	
 	private Camera2D camera;
 	private GLGraphics glGraphics;
 	private GL10 gl;
 	private GLText glText;
-
+	
 	private int selectedMenu;
+	private int[] scores;
 	
 	private List<MenuButton> items;
 	private SpriteBatcher batcher;
 	
 	
-	public SettingsScreen(Game game){
+	public HighScoresScreen(Game game){
 		super(game);
 		glGraphics = ((GLGame)game).getGLGraphics();
 		glGraphics.getView().setOnTouchListener(this);
@@ -55,31 +49,17 @@ public class SettingsScreen extends Screen implements OnTouchListener, OnKeyList
 		gl = glGraphics.getGL();
 		glText = Resources.glButtonText;
 		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
-
+		
+		scores = Resources.getScores((GLGame)game);
+		
 		selectedMenu = -1;
 		items = new ArrayList<MenuButton>();
-		
-		items.add(new BlankButton("Settings Menu", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
-		String touch;
-		if(Settings.displayTouchControls) {
-			touch = "Hide Touch Controls";
-		} else {
-			touch = "Show Touch Controls";
+
+		for(int i =0; i < scores.length; i++){
+			items.add(new BlankButton(scores[i] + "", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 13 * (12 - i), camera.zoom * 2 / 3));
 		}
-		items.add(new TouchVisibleButton(touch, glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
-		items.get(1).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
-		
-		String mute;
-		if(Settings.mute) {
-			mute = "un-mute";
-		} else {
-			mute = "mute";
-		}
-		items.add(new MuteButton(mute, glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
-		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
-		
-		items.add(new MainMenuButton("Back", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
-		items.get(3).setAltRGBA(0.0f, 1.0f, 0.3f, 1.0f);
+		items.add(new MainMenuButton("back", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 14 * 2 , camera.zoom));
+		items.get(items.size() - 1).setAltRGBA(1.0f, 0.3f, 0.0f, 1.0f);
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
@@ -165,7 +145,7 @@ public class SettingsScreen extends Screen implements OnTouchListener, OnKeyList
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
 			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i),  glGraphics.getHeight() - event.getY(i)))){
-			                			if(item1.heightLighted == false && item1.soundEnabled) {
+			                			if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				selectedMenu = -1;
 			                				item1.heightLighted = true;
@@ -183,6 +163,7 @@ public class SettingsScreen extends Screen implements OnTouchListener, OnKeyList
 			                	for(MenuButton item1: items) {
 				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i))) && item1.enabled){				                		
 				                		item1.action(game);	
+				                		selectedMenu = -1;
 				                		item1.heightLighted = false;
 				                    }
 			                	}
@@ -194,7 +175,7 @@ public class SettingsScreen extends Screen implements OnTouchListener, OnKeyList
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
 				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
-				                		if(item1.heightLighted == false  && item1.soundEnabled) {
+				                		if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				selectedMenu = -1;
 			                				item1.heightLighted = true;

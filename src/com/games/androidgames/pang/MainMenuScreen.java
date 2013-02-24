@@ -31,12 +31,12 @@ import com.games.androidgames.pang.buttons.CloseButton;
 import com.games.androidgames.pang.buttons.GameButton;
 import com.games.androidgames.pang.buttons.HelpButton;
 import com.games.androidgames.pang.buttons.MenuButton;
+import com.games.androidgames.pang.buttons.ScoresButton;
 import com.games.androidgames.pang.buttons.SettingsButton;
 import com.games.androidgames.pang.elements.Weapon;
 
 public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchListener {
 	private static int SPRITE_LIMIT = 100;
-	private static float WORLD_WIDTH = 840, WORLD_HEIGHT = 460;
 	
 	private Camera2D camera;
 	private GLGraphics glGraphics;
@@ -56,21 +56,21 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		glGraphics.getView().setOnKeyListener(this);
 		gl = glGraphics.getGL();
 		glText = Resources.glButtonText;
-		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
+		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 
 		selectedMenu = -1;
 		items = new ArrayList<MenuButton>();
-		items.add(new BlankButton("Pang", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
+		items.add(new BlankButton("Pang", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
 		
-		items.add(new GameButton("Start", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
+		items.add(new GameButton("Start", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
 		
-		items.add(new SettingsButton("Settings", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
+		items.add(new SettingsButton("Settings", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
 		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
 		
-		items.add(new HelpButton("Help", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
+		items.add(new ScoresButton("Scores", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
 		items.get(3).setAltRGBA(0.0f, 1.0f, 0.2f, 1.0f);
 		
-		items.add(new CloseButton("Quit", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 6, camera.zoom * 1.5f));
+		items.add(new CloseButton("Quit", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6, camera.zoom * 1.5f));
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
@@ -98,7 +98,7 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		
 		
 		batcher.beginBatch(Resources.background);
-		batcher.drawSprite(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, Resources.backgroundRegion);
+		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, Resources.backgroundRegion);
 		batcher.endBatch();
 		synchronized(this){
 			for(MenuButton item1: items) {

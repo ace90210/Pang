@@ -22,6 +22,11 @@ public class PowerItem extends DynamicGameObject {
 		this.region = region;
 		this.alive = false;
 		this.fallSpeed = -200;
+		switch(mode){
+		case SINGLE: value = 100; break;
+		case DOUBLE: value = 400; break;
+		case STICKY: value = 1500; break;
+		}
 		this.mode = mode;
 		this.life = life;
 		lifeLimit = life;

@@ -28,7 +28,6 @@ import com.games.androidgames.pang.buttons.MuteButton;
 
 public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener {
 	private static int SPRITE_LIMIT = 100;
-	private static float WORLD_WIDTH = 840, WORLD_HEIGHT = 460;
 	
 	private Camera2D camera;
 	private GLGraphics glGraphics;
@@ -48,14 +47,14 @@ public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener
 		glGraphics.getView().setOnKeyListener(this);
 		gl = glGraphics.getGL();
 		glText = Resources.glButtonText;
-		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
+		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 
 		selectedMenu = -1;
 		items = new ArrayList<MenuButton>();
 
-		items.add(new BlankButton("help screen", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 3, camera.zoom * 1.5f));
-		items.add(new BlankButton("Some help Text", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 * 2, camera.zoom * 1.5f));
-		items.add(new MainMenuButton("back", glText, WORLD_WIDTH / 2, WORLD_HEIGHT / 4 , camera.zoom * 1.5f));
+		items.add(new BlankButton("help screen", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 4 * 3, camera.zoom * 1.5f));
+		items.add(new BlankButton("Some help Text", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 4 * 2, camera.zoom * 1.5f));
+		items.add(new MainMenuButton("back", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 4 , camera.zoom * 1.5f));
 		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
@@ -84,7 +83,7 @@ public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener
 		
 		
 		batcher.beginBatch(Resources.background);
-		batcher.drawSprite(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, Resources.backgroundRegion);
+		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, Resources.backgroundRegion);
 		batcher.endBatch();
 		synchronized(items){
 			for(MenuButton item1: items) {

@@ -22,6 +22,7 @@ public class Start extends GLGame {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {         
         super.onSurfaceCreated(gl, config);
+        //Resources.resetTopTen(this);
         Resources.reload();
     }     
     

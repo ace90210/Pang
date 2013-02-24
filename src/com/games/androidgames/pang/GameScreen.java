@@ -45,9 +45,7 @@ import com.games.androidgames.pang.elements.Weapon.MODE;
 
 public class GameScreen extends Screen implements OnKeyListener, OnTouchListener {
 	Camera2D camera;
-	final float WORLD_WIDTH = 820.0f;
-	final float WORLD_HEIGHT = 460.0f;
-
+	
 	final float SPEAR_REGION_MAX = 240.0f;
 	final float BALL_RADIUS = 16.0f;
 	final float SMALLEST_BALL = 16.0f;
@@ -56,7 +54,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	final int BALL_LIMIT = 20;
 	final int SPRITE_LIMIT = 100;
 
-	private int selectedMenu;
+	private int selectedMenu, score;
 
 	float[] x = new float[10];
 	float[] y = new float[10];
@@ -71,7 +69,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
     
 	GLGraphics glGraphics;
 	GL10 gl;
-	GLText glText, glMenuText;
+	GLText glText, glMenuText, glScoreText;
 
 	private List<MenuButton> pauseItems;
 	Player player;
@@ -104,14 +102,17 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		gl = glGraphics.getGL();
 		glText = Resources.glText;
 		glMenuText = Resources.glButtonText;
+		glScoreText = Resources.glScoreText;
+		
 		selectedMenu = -1;
-		camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
+		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 		playerState = PlayerState.STANDING;
 		balls = new ArrayList<DynamicGameObject>();
 		ladders  = new ArrayList<Ladder>();
 		platforms = new ArrayList<GameObject>();
 		
-		balls.add(new Ball(WORLD_WIDTH / 4, WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
+		balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
+		this.score = 0;
 		
 		for(DynamicGameObject ball: balls) {
 			ball.velocity.x = 100;
@@ -119,10 +120,10 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);	
 		pauseItems = new ArrayList<MenuButton>();
-		pauseItems.add(new BlankButton("Paused", glMenuText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
-		pauseItems.add(new PauseButton("Resume", glMenuText, WORLD_WIDTH / 2, WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		pauseItems.add(new BlankButton("Paused", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
+		pauseItems.add(new PauseButton("Resume", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
 		
-		pauseItems.add(new MainMenuButton("Exit game", glMenuText, WORLD_WIDTH / 2, WORLD_HEIGHT / 3, camera.zoom * 1.5f));		
+		pauseItems.add(new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 3, camera.zoom * 1.5f));		
 	}
 	
 	@Override
@@ -156,7 +157,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			backgroundRegion =  Resources.backgroundRegion;
 			
 			
-			controls = new TouchControls(textureSet, WORLD_WIDTH, WORLD_HEIGHT);
+			controls = new TouchControls(textureSet, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 	}
 
 	@Override
@@ -269,11 +270,13 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			//spawn new ball
 			synchronized(balls) {
 				balls.clear();
+				score = 0;
 				if(balls.size() < BALL_LIMIT && !Settings.gamePaused) {
-					balls.add(new Ball(WORLD_WIDTH / 2, WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
+					balls.add(new Ball(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
 					balls.get(balls.size() - 1).velocity.x = 150;																		
 				}
-				player.reset(WORLD_WIDTH / 2, 50, 3);																	
+				player.reset(Settings.WORLD_WIDTH / 2, 50, 3);	
+				weapon.mode = MODE.SINGLE;
 			}
 		} else {															
 			if(Settings.gamePaused) {					
@@ -308,7 +311,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			playerState = PlayerState.STANDING;
 
 			//move player
-			if((keyPressed(KeyEvent.KEYCODE_DPAD_RIGHT) || controls.right >= 0) && player.position.x + player.bounds.width / 2 < WORLD_WIDTH) 	{
+			if((keyPressed(KeyEvent.KEYCODE_DPAD_RIGHT) || controls.right >= 0) && player.position.x + player.bounds.width / 2 < Settings.WORLD_WIDTH) 	{
 				player.movePlayer(200, 0, deltaTime);
 				playerState = PlayerState.WALKING_RIGHT;
 			} else if((keyPressed(KeyEvent.KEYCODE_DPAD_LEFT) || controls.left >= 0) && player.position.x - player.bounds.width / 2 > 0) 	{
@@ -367,6 +370,9 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 							Resources.playSound(Resources.HIT);
 						}
 						player.hit();
+						if(player.alive() == false){
+							Resources.checkScore((GLGame)game, score);
+						}
 					}
 					
 					//check spear collisions
@@ -375,7 +381,12 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						//if ball smaller than smallest ball limit destroy
 						if(ball.boundingCircle.radius < SMALLEST_BALL) {
 							balls.remove(ball);
+							score += 200;
+							if(balls.size() == 0){
+								Resources.checkScore((GLGame)game, score);
+							}
 						} else {
+							score += 50;
 							Random rand = new Random();								
 							int prize = rand.nextInt(2)+1;
 							
@@ -401,10 +412,10 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 							}
 							
 							ball.boundingCircle.radius /= 2; 
-							ball.velocity.y = BUMP * (WORLD_HEIGHT - ball.position.y);
+							ball.velocity.y = BUMP * (Settings.WORLD_HEIGHT - ball.position.y);
 							balls.add(new Ball(ball.position.x, ball.position.y, ball.boundingCircle.radius));
 							balls.get(balls.size() - 1).velocity.x = -ball.velocity.x;
-							balls.get(balls.size() - 1).velocity.y = BUMP * (WORLD_HEIGHT - ball.position.y);
+							balls.get(balls.size() - 1).velocity.y = BUMP * (Settings.WORLD_HEIGHT - ball.position.y);
 							
 							
 						}
@@ -414,9 +425,9 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 					if(ball.position.x < ball.boundingCircle.radius) {
 						ball.velocity.x = -ball.velocity.x;
 						ball.position.x = ball.boundingCircle.radius;
-					}else if(ball.position.x > WORLD_WIDTH - ball.boundingCircle.radius) {
+					}else if(ball.position.x > Settings.WORLD_WIDTH - ball.boundingCircle.radius) {
 						ball.velocity.x = -ball.velocity.x;
-						ball.position.x = WORLD_WIDTH - ball.boundingCircle.radius;
+						ball.position.x = Settings.WORLD_WIDTH - ball.boundingCircle.radius;
 					}
 					
 					//bounce ball when hit floor
@@ -466,6 +477,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(single.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, single.bounds)) {
 					weapon.mode = MODE.SINGLE;
+					score += single.value;
 					single.alive = false;
 				}
 				single.update(deltaTime, platforms);
@@ -473,6 +485,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(doub.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, doub.bounds)) {
 					weapon.mode = MODE.DOUBLE;
+					score += doub.value;
 					doub.alive = false;
 				}
 				doub.update(deltaTime, platforms);
@@ -480,6 +493,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(stick.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, stick.bounds)) {
 					weapon.mode = MODE.STICKY;
+					score += stick.value;
 					stick.alive = false;
 				}
 				stick.update(deltaTime, platforms);
@@ -500,7 +514,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		
 		batcher.beginBatch(background);
-		batcher.drawSprite(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, backgroundRegion);
+		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, backgroundRegion);
 		batcher.endBatch();
 			
 		batcher.beginBatch(textureSet);
@@ -616,29 +630,12 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		if(!player.alive()) {
 			Settings.gamePaused = true;
 			player.reset();
-			
-			glText.begin( 1.0f, 0.0f, 0.0f, 1.0f );         
-			glText.setScale(camera.zoom * 3);
-	        glText.drawC( "You Died ha!", camera.position.x, camera.position.y + 10);              
-	        glText.end(); 
-	        
-	        glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         
-			glText.setScale(camera.zoom);
-			glText.drawC( "Press start to try again", camera.position.x, camera.position.y - 30);              
-			glText.end(); 
+			// Died screen code here
 		} else if(balls.size() == 0) {
 			Settings.gamePaused = true;
 			player.reset();
 			
-			glText.begin( 0.0f, 1.0f, 0.0f, 1.0f );         
-			glText.setScale(camera.zoom * 3);
-	        glText.drawC( "You WON!!!", camera.position.x, camera.position.y + 10);             
-	        glText.end(); 
-	        
-	        glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         
-			glText.setScale(camera.zoom);
-			glText.drawC( "Press start to try again", camera.position.x, camera.position.y - 30);             
-			glText.end();  
+			//won screen code here
 		} else if(Settings.gamePaused) { 
 			for(MenuButton item: pauseItems) {
 				glMenuText.setScale(item.scale);
@@ -654,11 +651,17 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			}
 		}
 		
+		glScoreText.setScale(camera.zoom * 2);
+		glScoreText.begin(0.2f, 0.2f, 0.95f, 1.0f);
+		glScoreText.draw("score: " + score, 80 , Settings.WORLD_HEIGHT - 60);
+		glScoreText.end();
+		
+		
 		batcher.beginBatch(textureSet);
 		switch(weapon.mode){
-		case DOUBLE: batcher.drawSprite( 32, WORLD_HEIGHT - 32, doub.bounds.width, doub.bounds.height, doub.region); break;
-		case STICKY: batcher.drawSprite( 32, WORLD_HEIGHT - 32, stick.bounds.width, stick.bounds.height, stick.region); break;
-			default: batcher.drawSprite( 32, WORLD_HEIGHT - 32, single.bounds.width, single.bounds.height, single.region);
+		case DOUBLE: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, doub.bounds.width, doub.bounds.height, doub.region); break;
+		case STICKY: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, stick.bounds.width, stick.bounds.height, stick.region); break;
+			default: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, single.bounds.width, single.bounds.height, single.region);
 		}
 		batcher.endBatch();                                  
 	}

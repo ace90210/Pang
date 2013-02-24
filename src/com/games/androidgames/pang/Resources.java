@@ -5,9 +5,25 @@ import com.games.androidgames.framework.gl.Texture;
 import com.games.androidgames.framework.gl.TextureRegion;
 import com.games.androidgames.framework.impl.GLGame;
 import com.games.androidgames.framework.gl.Animation;
+import com.games.androidgames.pang.buttons.BlankButton;
+import com.games.androidgames.pang.buttons.CloseButton;
+import com.games.androidgames.pang.buttons.GameButton;
+import com.games.androidgames.pang.buttons.MainMenuButton;
+import com.games.androidgames.pang.buttons.MenuButton;
+import com.games.androidgames.pang.buttons.MuteButton;
+import com.games.androidgames.pang.buttons.PauseButton;
+import com.games.androidgames.pang.buttons.ScoresButton;
+import com.games.androidgames.pang.buttons.SettingsButton;
+import com.games.androidgames.pang.buttons.TouchVisibleButton;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
@@ -16,10 +32,11 @@ import android.media.SoundPool;
 
 public class Resources {	
 	private static SoundPool sounds;
+	private static final String PREFS_NAME = "PangScores";
 	public static int FIRE, POP, STICK, HIT, BUTTON_HEIGHTLIGHT;
 	public static Texture background;
 	public static Texture gameItems;
-	public static GLText glText, glButtonText;
+	public static GLText glText, glButtonText, glScoreText;
 	
 	public static TextureRegion backgroundRegion;
 	public static TextureRegion ball;
@@ -46,7 +63,7 @@ public class Resources {
 	public static Animation playerWalkRight;
 	public static Animation playerClimb;
 	public static Animation animNormalSpear;
-	public static Animation animStickySpear;
+	public static Animation animStickySpear;	
 	
 	public static void load(GLGame game){
 		game.setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -120,14 +137,17 @@ public class Resources {
 		
 		glText = new GLText( game.getGLGraphics().getGL(), game.getAssets() );
 		glButtonText = new GLText( game.getGLGraphics().getGL(), game.getAssets() );
+		glScoreText = new GLText(game.getGLGraphics().getGL(), game.getAssets() );
 		
 		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
 		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
+		glScoreText.load("score.ttf", 22, 2, 2 ); 
 	}
 	
 	public static void reload() {
 		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
 		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
+		glScoreText.load( "score.ttf", 22, 2, 2 );
         background.reload();
         gameItems.reload();
         
@@ -155,5 +175,48 @@ public class Resources {
 		sounds.release();
 		background.dispose();
 		gameItems.dispose();
+	}
+	
+	/*
+	 * returns top ten player slot, 0 if not in top ten
+	 */
+	public static int checkScore(GLGame game, int score){
+		SharedPreferences settings = game.getSharedPreferences(PREFS_NAME, 0);
+		int[] scores = new int[10];
+		for(int i =0;i<scores.length; i++){
+			scores[i] = settings.getInt("score" + i, -1);
+			if(score > scores[i]){
+			    SharedPreferences.Editor editor = settings.edit();		
+			    
+			    //shift rest down one
+			    for(int j = scores.length - 1; j > i; j--){			    	
+			    	editor.putInt("score" + j,  settings.getInt("score" + (j - 1), -1));
+				    editor.commit();
+			    }
+			    editor.putInt("score" + i, score);
+			    editor.commit();
+				return i + 1;
+			}
+		}
+	    return 0;
+	}
+	
+	public static int[] getScores(GLGame game){
+		SharedPreferences settings = game.getSharedPreferences(PREFS_NAME, 0);
+		int[] scores = new int[10];
+		for(int i =0;i<scores.length; i++){
+			scores[i] = settings.getInt("score" + i, -1);
+		}
+		return scores;
+	}
+	
+	public static void resetTopTen(GLGame game){
+		SharedPreferences settings = game.getSharedPreferences(PREFS_NAME, 0);
+		int[] scores = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+		for(int i =0;i<scores.length; i++){
+		    SharedPreferences.Editor editor = settings.edit();
+		    editor.putInt("score" + i, scores[i]);
+		    editor.commit();
+		}
 	}
 }

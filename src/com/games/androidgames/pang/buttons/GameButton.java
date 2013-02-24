@@ -3,6 +3,7 @@ package com.games.androidgames.pang.buttons;
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
 import com.games.androidgames.pang.GameScreen;
+import com.games.androidgames.pang.Settings;
 
 public class GameButton extends MenuButton {
 
@@ -12,6 +13,7 @@ public class GameButton extends MenuButton {
 
 	@Override
 	public void action(Game game) {
+		Settings.gamePaused = false;
 		game.setScreen(new GameScreen(game));		
 	}
 
