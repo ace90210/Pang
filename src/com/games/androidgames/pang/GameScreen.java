@@ -54,7 +54,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	final int BALL_LIMIT = 20;
 	final int SPRITE_LIMIT = 100;
 
-	private int selectedMenu, score;
+	private int selectedMenu, score, topTen;
 
 	float[] x = new float[10];
 	float[] y = new float[10];
@@ -71,7 +71,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	GL10 gl;
 	GLText glText, glMenuText, glScoreText;
 
-	private List<MenuButton> pauseItems;
+	private List<MenuButton> pauseItems, finishItems;
 	Player player;
 	PowerItem single, doub, stick;
 	Weapon weapon;
@@ -105,6 +105,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		glScoreText = Resources.glScoreText;
 		
 		selectedMenu = -1;
+		topTen = -1;
 		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 		playerState = PlayerState.STANDING;
 		balls = new ArrayList<DynamicGameObject>();
@@ -120,10 +121,15 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);	
 		pauseItems = new ArrayList<MenuButton>();
+		finishItems = new ArrayList<MenuButton>();
 		pauseItems.add(new BlankButton("Paused", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
 		pauseItems.add(new PauseButton("Resume", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
 		
-		pauseItems.add(new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 3, camera.zoom * 1.5f));		
+		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 3, camera.zoom * 1.5f);
+		pauseItems.add(exit);	
+		finishItems.add(new GameButton("Retry", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+
+		finishItems.add(exit);
 	}
 	
 	@Override
@@ -371,7 +377,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						}
 						player.hit();
 						if(player.alive() == false){
-							Resources.checkScore((GLGame)game, score);
+							topTen = Resources.checkScore((GLGame)game, score);
 						}
 					}
 					
@@ -383,7 +389,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 							balls.remove(ball);
 							score += 200;
 							if(balls.size() == 0){
-								Resources.checkScore((GLGame)game, score);
+								topTen = Resources.checkScore((GLGame)game, score);
 							}
 						} else {
 							score += 50;
@@ -630,12 +636,47 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		if(!player.alive()) {
 			Settings.gamePaused = true;
 			player.reset();
-			// Died screen code here
+			String text = "You Died";
+			if(topTen > 0){
+				text += " New Record " + topTen + "th";
+			}
+			glMenuText.begin(1, 0, 0, 1);
+			glMenuText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 75);
+			glMenuText.end();
+			for(MenuButton item: finishItems) {
+				glMenuText.setScale(item.scale);
+				if(item.heightLighted){
+					glMenuText.begin(item.altR, item.altG, item.altB, item.altA);
+					glMenuText.draw(item.text, item.bounds.lowerLeft.x , item.bounds.lowerLeft.y);
+					glMenuText.end();
+				} else {
+					glMenuText.begin(item.r, item.g, item.b, item.a);
+					glMenuText.draw(item.text, item.bounds.lowerLeft.x , item.bounds.lowerLeft.y);
+					glMenuText.end();
+				}
+			}
 		} else if(balls.size() == 0) {
 			Settings.gamePaused = true;
 			player.reset();
-			
-			//won screen code here
+			String text = "Congratulations you won";
+			if(topTen > 0){
+				text += " New Record " + topTen + "th";
+			}
+			glMenuText.begin(0.3f, 1, 0.3f, 1);
+			glMenuText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 75);
+			glMenuText.end();
+			for(MenuButton item: finishItems) {
+				glMenuText.setScale(item.scale);
+				if(item.heightLighted){
+					glMenuText.begin(item.altR, item.altG, item.altB, item.altA);
+					glMenuText.draw(item.text, item.bounds.lowerLeft.x , item.bounds.lowerLeft.y);
+					glMenuText.end();
+				} else {
+					glMenuText.begin(item.r, item.g, item.b, item.a);
+					glMenuText.draw(item.text, item.bounds.lowerLeft.x , item.bounds.lowerLeft.y);
+					glMenuText.end();
+				}
+			}
 		} else if(Settings.gamePaused) { 
 			for(MenuButton item: pauseItems) {
 				glMenuText.setScale(item.scale);
