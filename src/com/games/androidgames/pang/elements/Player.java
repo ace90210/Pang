@@ -8,6 +8,7 @@ import com.games.androidgames.framework.gl.Animation;
 import com.games.androidgames.framework.math.OverlapTester;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.pang.Resources;
+import com.games.androidgames.pang.Settings;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class Player extends DynamicGameObject {
 	private PlayerState playerState, lastState;
 	
 	public Player(float x, float y, float width, float height, int life, Texture texture) {
-		super(x, y, width, height);
+		super(x, y, width * Settings.SCALE_WIDTH, height * Settings.SCALE_HEIGHT);
 		walkingLeft = Resources.playerWalkLeft;
 		walkingRight =  Resources.playerWalkRight;
 		climbing =   Resources.playerClimb;
@@ -60,9 +61,9 @@ public class Player extends DynamicGameObject {
 		if(velocity.y <= 0) {
 			velocity.y = 0;
 		} else {
-			position.add((velocity.x -gravity.x) * deltaTime, (velocity.y - gravity.y) * deltaTime);
-			bounds.lowerLeft.add((velocity.x - gravity.x) * deltaTime, (velocity.y - gravity.y) * deltaTime);
-			velocity.add(gravity.x * 3 * deltaTime, gravity.y * 3 * deltaTime);
+			position.add((velocity.x -gravity.x) * Settings.SCALE_WIDTH * deltaTime, (velocity.y - gravity.y) * Settings.SCALE_HEIGHT * deltaTime);
+			bounds.lowerLeft.add((velocity.x -gravity.x) * Settings.SCALE_WIDTH * deltaTime, (velocity.y - gravity.y) * Settings.SCALE_HEIGHT * deltaTime);
+			velocity.add(gravity.x * 3 * Settings.SCALE_WIDTH * deltaTime, gravity.y * 3 * Settings.SCALE_HEIGHT * deltaTime);
 		}
 		
 		boolean onFloor = onFloor(deltaTime, ladders, objects);
@@ -74,8 +75,8 @@ public class Player extends DynamicGameObject {
 		}
 		
 		if(!onFloor || velocity.y > 0) {
-			position.add(gravity.x * deltaTime, gravity.y * deltaTime);		
-			bounds.lowerLeft.add(gravity.x * deltaTime, gravity.y * deltaTime);
+			position.add(gravity.x * Settings.SCALE_WIDTH * deltaTime, gravity.y * Settings.SCALE_HEIGHT * deltaTime);		
+			bounds.lowerLeft.add(gravity.x * Settings.SCALE_WIDTH * deltaTime, gravity.y * Settings.SCALE_HEIGHT * deltaTime);
 		} 
 	
 		switch(state){
@@ -130,8 +131,7 @@ public class Player extends DynamicGameObject {
 					if(!onFloor) {
 						position.y = (object.position.y + object.bounds.height / 2) + bounds.height / 2;		//update position and bounds
 						bounds.lowerLeft.set(position.x - bounds.width / 2, position.y - bounds.height / 2);
-					}
-				   
+					}				   
 				   onFloor = true;
 				}			
 			}	
@@ -145,8 +145,8 @@ public class Player extends DynamicGameObject {
 	}
 	
 	public void movePlayer(float x, float y, float deltaTime) {
-		position.add(x * deltaTime, y * deltaTime);
-		bounds.lowerLeft.add(x * deltaTime, y * deltaTime);
+		position.add(x * Settings.SCALE_WIDTH * deltaTime, y * Settings.SCALE_HEIGHT * deltaTime);
+		bounds.lowerLeft.add(x * Settings.SCALE_WIDTH * deltaTime, y * Settings.SCALE_HEIGHT * deltaTime);
 	}
 	
 	public TextureRegion getKeyFrame() {

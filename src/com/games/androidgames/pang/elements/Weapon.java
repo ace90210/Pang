@@ -7,6 +7,7 @@ import com.games.androidgames.framework.gl.Animation;
 import com.games.androidgames.framework.math.OverlapTester;
 import com.games.androidgames.framework.math.Circle;
 import com.games.androidgames.framework.GameObject;
+import com.games.androidgames.pang.Settings;
 
 
 import java.util.List;
@@ -18,10 +19,10 @@ public class Weapon {
 	public MODE mode;
 	public boolean alive;
 	
-	public Weapon(Texture texture, float stickTime){
-		this.spear = new Spear(0, 0, 20, 64, 150, 0, texture);	
-		this.spear2 = new Spear(0, 0, 20, 64, 150, 0, texture);	
-		this.stickySpear = new Spear(0, 0, 20, 64, 150, stickTime, texture);	
+	public Weapon(Texture texture, float stickTime, float screenHeight){
+		this.spear = new Spear(0, 0, 20, 64, 150, 0, screenHeight, texture);	
+		this.spear2 = new Spear(0, 0, 20, 64, 150, 0, screenHeight, texture);	
+		this.stickySpear = new Spear(0, 0, 20, 64, 150, stickTime, screenHeight, texture);	
 		this.mode = MODE.SINGLE;
 		this.spear.alive = false;
 		this.spear2.alive = false;
@@ -38,7 +39,7 @@ public class Weapon {
 		switch(mode) {
 			case DOUBLE: {
 							stickySpear.alive = false;
-							spear.update(deltaTime);
+							spear.update(deltaTime * Settings.SCALE_HEIGHT);
 							if(!spear.stick) {
 								for(int i = 0; i < objects.size(); i++) {
 									GameObject object = objects.get(i);

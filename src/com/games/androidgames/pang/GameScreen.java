@@ -113,7 +113,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		ladders  = new ArrayList<Ladder>();
 		platforms = new ArrayList<GameObject>();
 		
-		balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
+		balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * Settings.SCALE_WIDTH * 2));
 		this.score = 0;
 		
 		for(DynamicGameObject ball: balls) {
@@ -145,18 +145,18 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			
 			ballRegion = Resources.ball;
 							
-			weapon = new Weapon(textureSet, 2);				
+			weapon = new Weapon(textureSet, 2, glGraphics.getHeight());				
 			TextureRegion singleRegion = Resources.powerupSingle;
-			single = new PowerItem(singleRegion, 100, 400, 24, 48, 3, MODE.SINGLE);
+			single = new PowerItem(singleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 24 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.SINGLE);
 			
 			TextureRegion doubleRegion = Resources.powerupDouble;
-			doub = new PowerItem(doubleRegion, 100, 400, 48, 48, 3, MODE.DOUBLE);
+			doub = new PowerItem(doubleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 48 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.DOUBLE);
 			
 			TextureRegion stickyRegion = Resources.powerupSticky;
-			stick = new PowerItem(stickyRegion, 100, 400, 40, 48, 3, MODE.STICKY);
+			stick = new PowerItem(stickyRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 40 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.STICKY);
 			
-			ladders.add(new Ladder(textureSet, 250, 100, 50, 200));
-			ladders.add(new Ladder(textureSet, 450, 145, 50, 300));
+			ladders.add(new Ladder(textureSet, 250 * Settings.SCALE_WIDTH, 100 * Settings.SCALE_HEIGHT, 50 * Settings.SCALE_WIDTH, 200 * Settings.SCALE_HEIGHT));
+			ladders.add(new Ladder(textureSet, 450 * Settings.SCALE_WIDTH, 145 * Settings.SCALE_HEIGHT, 50 * Settings.SCALE_WIDTH, 300 * Settings.SCALE_HEIGHT));
 			
 			platforms.add(new Platform(textureSet, 300, 288, 300, 16));	
 			
@@ -279,7 +279,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 				balls.clear();
 				score = 0;
 				if(balls.size() < BALL_LIMIT && !Settings.gamePaused) {
-					balls.add(new Ball(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
+					balls.add(new Ball(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * Settings.SCALE_WIDTH * 2));
 					balls.get(balls.size() - 1).velocity.x = 150;																		
 				}
 				player.reset(Settings.WORLD_WIDTH / 2, 50, 3);	
@@ -386,7 +386,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 					if(weapon.checkCollisions(ball.boundingCircle)) {							
 						Resources.playSound(Resources.POP);
 						//if ball smaller than smallest ball limit destroy
-						if(ball.boundingCircle.radius < SMALLEST_BALL) {
+						if(ball.boundingCircle.radius < SMALLEST_BALL * Settings.SCALE_WIDTH) {
 							balls.remove(ball);
 							score += 200;
 							if(balls.size() == 0){
@@ -472,7 +472,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 					}
 					
 					//apply changes to ball
-					ball.position.add(ball.velocity.x * deltaTime, ball.velocity.y * deltaTime);
+					ball.position.add(ball.velocity.x * Settings.SCALE_WIDTH * deltaTime, ball.velocity.y * Settings.SCALE_HEIGHT * deltaTime);
 					ball.boundingCircle.center.set(ball.position.x, ball.position.y);						
 				}	
 			}	
@@ -695,17 +695,22 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			}
 		}
 		
-		glScoreText.setScale(camera.zoom * 2);
+		glScoreText.setScale(camera.zoom  * Settings.SCALE_WIDTH * 2);
 		glScoreText.begin(0.2f, 0.2f, 0.95f, 1.0f);
-		glScoreText.draw("score: " + score, 80 , Settings.WORLD_HEIGHT - 60);
+		glScoreText.draw("score: " + score, 80 * Settings.SCALE_WIDTH , Settings.WORLD_HEIGHT - 60 * Settings.SCALE_HEIGHT);
 		glScoreText.end();
+		
+		glText.setScale(camera.zoom * Settings.SCALE_WIDTH);
+		glText.begin(1, 1, 1, 1);
+		glText.draw("P.LL: " + player.bounds.lowerLeft.y + " Plat.TL: " + (platforms.get(0).bounds.lowerLeft.y + platforms.get(0).bounds.height), 80 * Settings.SCALE_WIDTH , Settings.WORLD_HEIGHT - 60 * Settings.SCALE_HEIGHT);
+		glText.end();
 		
 		
 		batcher.beginBatch(textureSet);
 		switch(weapon.mode){
-		case DOUBLE: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, doub.bounds.width, doub.bounds.height, doub.region); break;
-		case STICKY: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, stick.bounds.width, stick.bounds.height, stick.region); break;
-			default: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, single.bounds.width, single.bounds.height, single.region);
+		case DOUBLE: batcher.drawSprite( 32 * Settings.SCALE_WIDTH, Settings.WORLD_HEIGHT - 32 * Settings.SCALE_HEIGHT, doub.bounds.width * Settings.SCALE_WIDTH, doub.bounds.height * Settings.SCALE_HEIGHT, doub.region); break;
+		case STICKY: batcher.drawSprite( 32 * Settings.SCALE_WIDTH, Settings.WORLD_HEIGHT - 32 * Settings.SCALE_HEIGHT, stick.bounds.width * Settings.SCALE_WIDTH, stick.bounds.height * Settings.SCALE_HEIGHT, stick.region); break;
+			default: batcher.drawSprite( 32 * Settings.SCALE_WIDTH, Settings.WORLD_HEIGHT - 32 * Settings.SCALE_HEIGHT, single.bounds.width * Settings.SCALE_WIDTH, single.bounds.height * Settings.SCALE_HEIGHT, single.region);
 		}
 		batcher.endBatch();                                  
 	}
@@ -736,8 +741,8 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	                    // point
 	                    continue;
 	                }
-	                float x = event.getX(i);
-	                float y = glGraphics.getHeight() - event.getY(i);
+	                float x = event.getX(i) * Settings.SCALE_HEIGHT;
+	                float y =  (glGraphics.getHeight() - event.getY(i)) * Settings.SCALE_HEIGHT;
 	                switch (action) {
 		                case MotionEvent.ACTION_DOWN:
 		                case MotionEvent.ACTION_POINTER_DOWN:
@@ -782,6 +787,17 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 				                    } 
 			                	}
 		                	}
+		                	if(!player.alive() || balls.size() == 0){
+		                		for(MenuButton item1: finishItems) {
+			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
+			                			if(item1.heightLighted == false  && item1.soundEnabled) {
+			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+			                				selectedMenu = -1;
+			                				item1.heightLighted = true;
+			                			}			                    	
+				                    } 
+			                	}
+		                	}
 		                }  break;
 	
 		                case MotionEvent.ACTION_UP:
@@ -806,6 +822,15 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 				                    }
 			                	}
 			    			}
+			    			if(!player.alive() || balls.size() == 0){
+		                		for(MenuButton item1: finishItems) {
+			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
+			                			if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y)) && item1.enabled){
+					                		item1.action(game);			                    	
+					                    }		                    	
+				                    } 
+			                	}
+		                	}
 		                } break;
 	
 		                case MotionEvent.ACTION_MOVE:
@@ -848,6 +873,19 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		                	}
 		                	if(Settings.gamePaused){
 			                	for(MenuButton item1: pauseItems) {
+				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
+				                		if(item1.heightLighted == false  && item1.soundEnabled) {
+			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+			                				selectedMenu = -1;
+			                				item1.heightLighted = true;
+			                			}
+				                    } else {
+				                    	item1.heightLighted = false;
+				                    }
+			                	}
+		                	}
+		                	if(!player.alive() || balls.size() == 0){
+		                		for(MenuButton item1: finishItems) {
 				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
 				                		if(item1.heightLighted == false  && item1.soundEnabled) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);

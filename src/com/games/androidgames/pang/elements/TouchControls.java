@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.games.androidgames.framework.gl.TextureRegion;
 import com.games.androidgames.framework.gl.Texture;
 import com.games.androidgames.pang.Resources;
+import com.games.androidgames.pang.Settings;
 
 public class TouchControls {
 	public List<TouchElement> touchElements;
@@ -22,18 +23,18 @@ public class TouchControls {
 		startRegion = Resources.controlsStart;
 		stickRegion = Resources.controlsJoystick;	
 		
-		touchElements.add(new TouchElement(100, 100,  160,  160, stickRegion));			//joystick	
+		touchElements.add(new TouchElement(100 * Settings.SCALE_WIDTH, 100 * Settings.SCALE_HEIGHT,  160 * Settings.SCALE_WIDTH,  160 * Settings.SCALE_HEIGHT, stickRegion));			//joystick	
 		touchElements.get(0).setBothBoundsBuffers(15);		
 		
-		touchElements.add(new TouchElement(worldWidth - 210, 42, 70, 70, aRegion));		//A
+		touchElements.add(new TouchElement(worldWidth - 210 * Settings.SCALE_WIDTH, 42 * Settings.SCALE_HEIGHT, 70 * Settings.SCALE_WIDTH, 70 * Settings.SCALE_HEIGHT, aRegion));		//A
 		touchElements.get(1).setBothBoundsBuffers(10);
 		touchElements.get(1).setWait(250);
 		
-		touchElements.add(new TouchElement(worldWidth - 92, 42, 70, 70, bRegion));		//B
+		touchElements.add(new TouchElement(worldWidth - 92 * Settings.SCALE_WIDTH, 42 * Settings.SCALE_HEIGHT, 70 * Settings.SCALE_WIDTH, 70 * Settings.SCALE_HEIGHT, bRegion));		//B
 		touchElements.get(2).setBothBoundsBuffers(10);
 		touchElements.get(2).setWait(250);
 		
-		touchElements.add(new TouchElement(worldWidth - 64, worldHeight - 42, 128, 50, startRegion));	//Start
+		touchElements.add(new TouchElement(worldWidth - 64 * Settings.SCALE_WIDTH, worldHeight - 42 * Settings.SCALE_HEIGHT, 128 * Settings.SCALE_WIDTH, 50 * Settings.SCALE_HEIGHT, startRegion));	//Start
 		touchElements.get(3).setBoundsWidthBuffer(20);
 		touchElements.get(3).setBoundsHeightBuffer(15);
 		touchElements.get(3).setWait(300);	

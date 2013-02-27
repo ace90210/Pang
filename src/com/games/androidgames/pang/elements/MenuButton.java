@@ -4,6 +4,7 @@ import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
 import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
+import com.games.androidgames.pang.Settings;
 
 public abstract class MenuButton {
 	protected final Vector2 position;
@@ -24,7 +25,7 @@ public abstract class MenuButton {
 		this.altG = 0.0f;
 		this.altB = 0.0f;
 		this.altA = 1.0f;
-		this.scale = scale;
+		this.scale = scale * Settings.SCALE_WIDTH;
 		this.glText = glText;		
 		setRectangle(x, y);
 	}
@@ -40,7 +41,7 @@ public abstract class MenuButton {
 		this.altG = 0.0f;
 		this.altB = 0.0f;
 		this.altA = 1.0f;
-		this.scale = scale;
+		this.scale = scale * Settings.SCALE_WIDTH;
 		this.glText = glText;	
 		glText.setScale(scale);
 		float width = glText.getLength(text) ;

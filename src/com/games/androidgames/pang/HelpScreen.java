@@ -134,13 +134,15 @@ public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener
 	                    // point
 	                    continue;
 	                }
+	                float x = event.getX(i) * Settings.SCALE_HEIGHT;
+	                float y =  (glGraphics.getHeight() - event.getY(i)) * Settings.SCALE_HEIGHT;
 	                switch (action) {
 		                case MotionEvent.ACTION_DOWN:
 		                case MotionEvent.ACTION_POINTER_DOWN:
 		                {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
-			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i),  glGraphics.getHeight() - event.getY(i)))){
+			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( x, y))){
 			                			if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				selectedMenu = -1;
@@ -157,7 +159,7 @@ public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener
 		                {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
-				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i))) && item1.enabled){				                		
+				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( x, y)) && item1.enabled){				                		
 				                		item1.action(game);	
 				                		selectedMenu = -1;
 				                		item1.heightLighted = false;
@@ -170,7 +172,7 @@ public class HelpScreen extends Screen implements OnTouchListener, OnKeyListener
 		                {
 		                	synchronized(this){
 			                	for(MenuButton item1: items) {
-				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2( event.getX(i), glGraphics.getHeight() - event.getY(i)))){
+				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
 				                		if(item1.heightLighted == false) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				selectedMenu = -1;

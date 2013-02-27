@@ -5,6 +5,7 @@ import java.util.List;
 import com.games.androidgames.framework.DynamicGameObject;
 import com.games.androidgames.framework.GameObject;
 import com.games.androidgames.framework.math.OverlapTester;
+import com.games.androidgames.pang.Settings;
 
 public class Ball extends DynamicGameObject{
 

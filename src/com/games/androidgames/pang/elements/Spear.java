@@ -9,6 +9,7 @@ import com.games.androidgames.framework.gl.Texture;
 import com.games.androidgames.framework.gl.Animation;
 import com.games.androidgames.framework.math.OverlapTester;
 import com.games.androidgames.pang.Resources;
+import com.games.androidgames.pang.Settings;
 
 public class Spear extends DynamicGameObject {	
 	private float speed, movingTime;
@@ -20,8 +21,8 @@ public class Spear extends DynamicGameObject {
 	public TextureRegion region, stickRegion;
 	
 	//life > 0 = sticky
-	public Spear(float x, float y, float width, float height, float speed, float life, Texture texture) {
-		super(x, y, width, height);
+	public Spear(float x, float y, float width, float height, float speed, float life, float screenHeight, Texture texture) {
+		super(x, y, width * Settings.SCALE_WIDTH, height * Settings.SCALE_HEIGHT);
 		this.alive = false;
 		if(life > 0) {
 			this.anim =   Resources.animStickySpear;
@@ -32,7 +33,7 @@ public class Spear extends DynamicGameObject {
 
 		this.region =  Resources.normalSpear;
 		this.realHeight = height;
-		this.heightLimit = 460;
+		this.heightLimit = screenHeight * Settings.SCALE_HEIGHT;
 		this.speed = speed;
 		this.movingTime = 0;
 		this.life = life;
@@ -59,8 +60,8 @@ public class Spear extends DynamicGameObject {
 				stop();
 			}
 			region = anim.getKeyFrame(movingTime, Animation.ANIMATION_LOOPING);
-			realHeight += speed * deltaTime * 2;
-			position.y += speed * deltaTime;
+			realHeight += speed * deltaTime  * Settings.SCALE_HEIGHT * 2;
+			position.y += speed * deltaTime * Settings.SCALE_HEIGHT;
 			updateBounds(position.x, position.y, bounds.width, realHeight );
 		}
 	}
@@ -68,7 +69,7 @@ public class Spear extends DynamicGameObject {
 	public void shoot(float x, float y) {	
 		stick = false;
 		alive = true;
-		this.realHeight = 64;
+		this.realHeight = 64 * Settings.SCALE_HEIGHT;
 		this.position.set(x, y);
 		updateBounds(position.x, position.y, bounds.width, realHeight );	
 	}
