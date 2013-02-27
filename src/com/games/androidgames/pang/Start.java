@@ -23,6 +23,8 @@ public class Start extends GLGame {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {         
         super.onSurfaceCreated(gl, config);
         //Resources.resetTopTen(this);
+        Settings.WORLD_HEIGHT = this.getGLGraphics().getHeight();
+        Settings.WORLD_WIDTH = this.getGLGraphics().getWidth();
         Resources.reload();
     }     
     

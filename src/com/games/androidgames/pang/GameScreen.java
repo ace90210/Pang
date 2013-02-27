@@ -31,6 +31,7 @@ import com.games.androidgames.pang.buttons.GameButton;
 import com.games.androidgames.pang.buttons.MainMenuButton;
 import com.games.androidgames.pang.buttons.MenuButton;
 import com.games.androidgames.pang.buttons.PauseButton;
+import com.games.androidgames.pang.buttons.ScoresButton;
 import com.games.androidgames.pang.elements.Ball;
 import com.games.androidgames.pang.elements.Ladder;
 import com.games.androidgames.pang.elements.Platform;
@@ -127,7 +128,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 3, camera.zoom * 1.5f);
 		pauseItems.add(exit);	
-		finishItems.add(new GameButton("Retry", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		finishItems.add(new ScoresButton("View Scoreboard", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
 
 		finishItems.add(exit);
 	}
@@ -636,6 +637,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		if(!player.alive()) {
 			Settings.gamePaused = true;
 			player.reset();
+			glMenuText.setScale(0.4f);
 			String text = "You Died";
 			if(topTen > 0){
 				text += " New Record " + topTen + "th";
@@ -658,6 +660,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		} else if(balls.size() == 0) {
 			Settings.gamePaused = true;
 			player.reset();
+			glMenuText.setScale(0.4f);
 			String text = "Congratulations you won";
 			if(topTen > 0){
 				text += " New Record " + topTen + "th";
