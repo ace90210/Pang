@@ -101,7 +101,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		glGraphics.getView().setFocusable(true);
 		glGraphics.getView().requestFocus();
 		gl = glGraphics.getGL();
-		glText = Resources.glText;
+		glText = Resources.glScoreText;
 		glMenuText = Resources.glButtonText;
 		glScoreText = Resources.glScoreText;
 		
@@ -126,10 +126,10 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		pauseItems.add(new BlankButton("Paused", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 4, camera.zoom * 1.5f));
 		pauseItems.add(new PauseButton("Resume", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
 		
-		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 3, camera.zoom * 1.5f);
+		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5, camera.zoom * 1.5f);
 		pauseItems.add(exit);	
-		finishItems.add(new ScoresButton("View Scoreboard", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
-
+		finishItems.add(new GameButton("New Game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		finishItems.add(new ScoresButton("View Scoreboard", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 2, camera.zoom * 1.5f));
 		finishItems.add(exit);
 	}
 	
@@ -145,15 +145,15 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			
 			ballRegion = Resources.ball;
 							
-			weapon = new Weapon(textureSet, 2, glGraphics.getHeight());				
+			weapon = new Weapon(textureSet, 2.5f, glGraphics.getHeight());				
 			TextureRegion singleRegion = Resources.powerupSingle;
-			single = new PowerItem(singleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 24 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.SINGLE);
+			single = new PowerItem(singleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 24 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 2.5f, MODE.SINGLE);
 			
 			TextureRegion doubleRegion = Resources.powerupDouble;
-			doub = new PowerItem(doubleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 48 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.DOUBLE);
+			doub = new PowerItem(doubleRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 48 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 2.5f, MODE.DOUBLE);
 			
 			TextureRegion stickyRegion = Resources.powerupSticky;
-			stick = new PowerItem(stickyRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 40 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 3, MODE.STICKY);
+			stick = new PowerItem(stickyRegion, 100 * Settings.SCALE_WIDTH, 400 * Settings.SCALE_HEIGHT, 40 * Settings.SCALE_WIDTH, 48 * Settings.SCALE_HEIGHT, 2.5f, MODE.STICKY);
 			
 			ladders.add(new Ladder(textureSet, 250 * Settings.SCALE_WIDTH, 100 * Settings.SCALE_HEIGHT, 50 * Settings.SCALE_WIDTH, 200 * Settings.SCALE_HEIGHT));
 			ladders.add(new Ladder(textureSet, 450 * Settings.SCALE_WIDTH, 145 * Settings.SCALE_HEIGHT, 50 * Settings.SCALE_WIDTH, 300 * Settings.SCALE_HEIGHT));
@@ -178,9 +178,16 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			switch(event.getKeyCode())
 			{
 				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x
-														if(Settings.gamePaused && selectedMenu != -1){
-															pauseItems.get(selectedMenu).action(game);	
-							                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+														if(!player.alive() || balls.size() == 0){
+															if(selectedMenu < finishItems.size()){	
+																finishItems.get(selectedMenu).action(game);	
+									            				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+															}
+														}else if(Settings.gamePaused && selectedMenu != -1){
+															if(selectedMenu < pauseItems.size()){																
+																pauseItems.get(selectedMenu).action(game);	
+																Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+															}
 														}
 													}
 												break;
@@ -199,35 +206,69 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 												}													
 												break;
 				case KeyEvent.KEYCODE_DPAD_UP:  {
-													if(Settings.gamePaused){
+												 	if(!player.alive() || balls.size() == 0){
+														if(selectedMenu == -1){
+															selectedMenu = finishItems.size() - 1;
+														} 
+														do
+														{
+															finishItems.get(selectedMenu).heightLighted = false;
+															if(selectedMenu == 0){
+																selectedMenu = finishItems.size() - 1;
+															} else {
+																	selectedMenu--;
+															}
+														}while(!finishItems.get(selectedMenu).enabled);
+														finishItems.get(selectedMenu).heightLighted = true;
+														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
+													}else if(Settings.gamePaused){
 														if(selectedMenu == -1){
 															selectedMenu = pauseItems.size() - 1;
 														} 
 														do
 														{
+															finishItems.get(selectedMenu).heightLighted = false;
 															if(selectedMenu == 0){
 																selectedMenu = pauseItems.size() - 1;
 															} else {
 																	selectedMenu--;
 															}
 														}while(!pauseItems.get(selectedMenu).enabled);
+														finishItems.get(selectedMenu).heightLighted = true;
 														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 													}
 												}
 												break;
 				case KeyEvent.KEYCODE_DPAD_DOWN: {
-													if(Settings.gamePaused){
-														if(selectedMenu == -1){
+													if(!player.alive() || balls.size() == 0){
+														if(selectedMenu == -1 || selectedMenu > finishItems.size()){
 															selectedMenu = 0;
 														} 
 														do
 														{
+															finishItems.get(selectedMenu).heightLighted = false;
+															if(selectedMenu == finishItems.size() - 1){
+																selectedMenu = 0;
+															} else {
+																	selectedMenu++;
+															}
+														}while(!finishItems.get(selectedMenu).enabled);			
+														finishItems.get(selectedMenu).heightLighted = true;
+														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+													}else if(Settings.gamePaused){
+														if(selectedMenu == -1 || selectedMenu > pauseItems.size()){
+															selectedMenu = 0;
+														} 
+														do
+														{
+															finishItems.get(selectedMenu).heightLighted = false;
 															if(selectedMenu == pauseItems.size() - 1){
 																selectedMenu = 0;
 															} else {
 																	selectedMenu++;
 															}
-														}while(!pauseItems.get(selectedMenu).enabled);												
+														}while(!pauseItems.get(selectedMenu).enabled);	
+														finishItems.get(selectedMenu).heightLighted = true;
 														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 													}
 												 }
@@ -637,14 +678,23 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		if(!player.alive()) {
 			Settings.gamePaused = true;
 			player.reset();
-			glMenuText.setScale(0.4f);
-			String text = "You Died";
+			glText.setScale(1.5f);
+			String text = "You Died! ";
 			if(topTen > 0){
-				text += " New Record " + topTen + "th";
+				text += " New Record " + topTen;
+				if(topTen > 3){
+					text += "th";
+				} else if(topTen == 3){
+					text += "rd";
+				} else if(topTen == 2){
+					text += "nd";
+				} else if(topTen == 3){
+					text += "st";
+				}
 			}
-			glMenuText.begin(1, 0, 0, 1);
-			glMenuText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 75);
-			glMenuText.end();
+			glText.begin(1, 0, 0, 1);
+			glText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 85 * Settings.SCALE_HEIGHT);
+			glText.end();
 			for(MenuButton item: finishItems) {
 				glMenuText.setScale(item.scale);
 				if(item.heightLighted){
@@ -660,14 +710,23 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		} else if(balls.size() == 0) {
 			Settings.gamePaused = true;
 			player.reset();
-			glMenuText.setScale(0.4f);
-			String text = "Congratulations you won";
+			glText.setScale(1.2f);
+			String text = "Congratulations you won! ";
 			if(topTen > 0){
-				text += " New Record " + topTen + "th";
+				text += " New Record " + topTen;
+				if(topTen > 3){
+					text += "th";
+				} else if(topTen == 3){
+					text += "rd";
+				} else if(topTen == 2){
+					text += "nd";
+				} else if(topTen == 3){
+					text += "st";
+				}
 			}
-			glMenuText.begin(0.3f, 1, 0.3f, 1);
-			glMenuText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 75);
-			glMenuText.end();
+			glText.begin(0.05f, 0.3f, 0.05f, 1);
+			glText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 85 * Settings.SCALE_HEIGHT);
+			glText.end();
 			for(MenuButton item: finishItems) {
 				glMenuText.setScale(item.scale);
 				if(item.heightLighted){
@@ -699,11 +758,6 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		glScoreText.begin(0.2f, 0.2f, 0.95f, 1.0f);
 		glScoreText.draw("score: " + score, 80 * Settings.SCALE_WIDTH , Settings.WORLD_HEIGHT - 60 * Settings.SCALE_HEIGHT);
 		glScoreText.end();
-		
-		glText.setScale(camera.zoom * Settings.SCALE_WIDTH);
-		glText.begin(1, 1, 1, 1);
-		glText.draw("P.LL: " + player.bounds.lowerLeft.y + " Plat.TL: " + (platforms.get(0).bounds.lowerLeft.y + platforms.get(0).bounds.height), 80 * Settings.SCALE_WIDTH , Settings.WORLD_HEIGHT - 60 * Settings.SCALE_HEIGHT);
-		glText.end();
 		
 		
 		batcher.beginBatch(textureSet);
@@ -782,7 +836,6 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			                			if(item1.heightLighted == false  && item1.soundEnabled) {
 			                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 			                				selectedMenu = -1;
-			                				item1.heightLighted = true;
 			                			}			                    	
 				                    } 
 			                	}

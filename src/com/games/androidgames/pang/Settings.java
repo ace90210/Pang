@@ -5,5 +5,5 @@ public class Settings {
 	public static boolean displayTouchControls = true;
 	public static boolean gamePaused = false;
 	public static float SCALE_WIDTH, SCALE_HEIGHT;
-	public static float WORLD_WIDTH = 620.0f, WORLD_HEIGHT = 360.0f;
+	public static float WORLD_WIDTH = 840.0f, WORLD_HEIGHT = 480.0f;
 }

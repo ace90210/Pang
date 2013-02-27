@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Player extends DynamicGameObject {
-	private static int IMMUNE_LIMIT = 3; //seconds to remain immune after hit
+	private static int IMMUNE_LIMIT = 2; //seconds to remain immune after hit
 	private float walkingTime, immuneTime;
 	private Vector2 gravity;
 	private Animation walkingLeft, walkingRight, climbing;

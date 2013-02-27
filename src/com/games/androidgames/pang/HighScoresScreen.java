@@ -58,7 +58,7 @@ public class HighScoresScreen extends Screen implements OnTouchListener, OnKeyLi
 		for(int i =0; i < scores.length; i++){
 			items.add(new BlankButton(scores[i] + "", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 13 * (12 - i), camera.zoom * 2 / 3));
 		}
-		items.add(new MainMenuButton("back", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 14 * 2 , camera.zoom));
+		items.add(new MainMenuButton("back", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 14 , camera.zoom));
 		items.get(items.size() - 1).setAltRGBA(1.0f, 0.3f, 0.0f, 1.0f);
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
