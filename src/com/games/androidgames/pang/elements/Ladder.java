@@ -3,6 +3,7 @@ package com.games.androidgames.pang.elements;
 import com.games.androidgames.framework.GameObject;
 import com.games.androidgames.framework.gl.TextureRegion;
 import com.games.androidgames.framework.gl.Texture;
+import com.games.androidgames.pang.Settings;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class Ladder extends GameObject {
 		int remainder = (int)height % TILE_HEIGHT;
 		tiles = new ArrayList<GameObject>();
 		
-		if(height >= 30) {
+		if(height>= 30) {
 			tileRegion = new TextureRegion(texture, 1, 131, 25, TILE_HEIGHT);
 			int numTiles = (int)height / TILE_HEIGHT;
 					

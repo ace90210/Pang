@@ -1,6 +1,5 @@
 package com.games.androidgames.framework;
 
-import java.util.List;
 import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Circle;
 import com.games.androidgames.framework.math.Vector2;

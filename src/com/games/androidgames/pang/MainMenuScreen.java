@@ -7,7 +7,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View.OnTouchListener;
 import android.view.View.OnKeyListener;
 import android.view.MotionEvent;
@@ -16,24 +15,18 @@ import android.view.View;
 import com.games.androidgames.framework.impl.GLGame;
 import com.games.androidgames.framework.impl.GLGraphics;
 import com.games.androidgames.framework.GLText;
-import com.games.androidgames.framework.Input.TouchEvent;
-import com.games.androidgames.framework.Pool;
 import com.games.androidgames.framework.Screen;
 import com.games.androidgames.framework.Game;
-import com.games.androidgames.framework.impl.TouchHandler;
 import com.games.androidgames.framework.math.OverlapTester;
-import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
 import com.games.androidgames.pang.buttons.BlankButton;
 import com.games.androidgames.pang.buttons.CloseButton;
 import com.games.androidgames.pang.buttons.GameButton;
-import com.games.androidgames.pang.buttons.HelpButton;
 import com.games.androidgames.pang.buttons.MenuButton;
 import com.games.androidgames.pang.buttons.ScoresButton;
 import com.games.androidgames.pang.buttons.SettingsButton;
-import com.games.androidgames.pang.elements.Weapon;
 
 public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchListener {
 	private static int SPRITE_LIMIT = 100;
@@ -65,10 +58,8 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		items.add(new GameButton("Start", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
 		
 		items.add(new SettingsButton("Settings", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
-		items.get(2).setAltRGBA(0.0f, 0.3f, 1.0f, 1.0f);
 		
 		items.add(new ScoresButton("Scores", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
-		items.get(3).setAltRGBA(0.0f, 1.0f, 0.2f, 1.0f);
 		
 		items.add(new CloseButton("Quit", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6, camera.zoom * 1.5f));
 		
@@ -97,8 +88,8 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		gl.glEnable(GL10.GL_TEXTURE_2D);		  
 		
 		
-		batcher.beginBatch(Resources.background);
-		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, Resources.backgroundRegion);
+		batcher.beginBatch(Resources.backgroundMenu);
+		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, Resources.backgroundMenuRegion);
 		batcher.endBatch();
 		synchronized(this){
 			for(MenuButton item1: items) {
@@ -141,7 +132,6 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 	            int action = event.getAction() & MotionEvent.ACTION_MASK;
 	            int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
 	            int pointerCount = event.getPointerCount();
-	            TouchEvent touchEvent;
 	            for (int i = 0; i < pointerCount; i++) {
 	                int pointerId = event.getPointerId(i);
 	                if (event.getAction() != MotionEvent.ACTION_MOVE && i != pointerIndex) {
@@ -205,8 +195,10 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 			switch(event.getKeyCode())
 			{
 				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x
-														items.get(selectedMenu).action(game);	
-						                				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+														if(selectedMenu != -1){
+															items.get(selectedMenu).action(game);	
+						                					Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
+														}
 													}
 												break;
 					case KeyEvent.KEYCODE_BACK:  {

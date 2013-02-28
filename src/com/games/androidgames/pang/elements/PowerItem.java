@@ -8,6 +8,7 @@ import com.games.androidgames.framework.math.Rectangle;
 import com.games.androidgames.framework.math.Vector2;
 import com.games.androidgames.framework.GameObject;
 import com.games.androidgames.framework.gl.TextureRegion;
+import com.games.androidgames.pang.Settings;
 import com.games.androidgames.pang.elements.Weapon.MODE;
 
 public class PowerItem extends DynamicGameObject {

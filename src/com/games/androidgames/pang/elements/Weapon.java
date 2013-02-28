@@ -39,7 +39,7 @@ public class Weapon {
 		switch(mode) {
 			case DOUBLE: {
 							stickySpear.alive = false;
-							spear.update(deltaTime * Settings.SCALE_HEIGHT);
+							spear.update(deltaTime);
 							if(!spear.stick) {
 								for(int i = 0; i < objects.size(); i++) {
 									GameObject object = objects.get(i);

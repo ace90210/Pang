@@ -2,7 +2,6 @@ package com.games.androidgames.pang.buttons;
 
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
-import com.games.androidgames.pang.HelpScreen;
 import com.games.androidgames.pang.Resources;
 
 public class CloseButton extends MenuButton {

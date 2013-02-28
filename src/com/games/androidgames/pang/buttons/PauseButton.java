@@ -13,14 +13,17 @@ public class PauseButton extends MenuButton {
 
 	@Override
 	public void action(Game game) {
-		if(Settings.gamePaused) {
-			Settings.gamePaused = false;
-			this.text = "Resume";
-			this.setRectangle(position.x, position.y);
-		} else {
-			Settings.gamePaused = true;
-			this.text = "Pause";
-			this.setRectangle(this.position.x, this.position.y);
+		if(this.ready()){
+			this.use();
+			if(Settings.gamePaused) {
+				Settings.gamePaused = false;
+				this.text = "Resume";
+				this.setRectangle(position.x, position.y);
+			} else {
+				Settings.gamePaused = true;
+				this.text = "Pause";
+				this.setRectangle(this.position.x, this.position.y);
+			}
 		}
 	}
 	

@@ -15,6 +15,9 @@ public class Start extends GLGame {
 	boolean firstTimeCreate = true;
 	    
 	public Screen getStartScreen() {
+        Settings.SCALE_HEIGHT = ( getGLGraphics().getHeight() / Settings.WORLD_HEIGHT);
+        Settings.SCALE_WIDTH = ( getGLGraphics().getWidth() / Settings.WORLD_WIDTH);
+	    
 		Resources.load(this);
 	    return new MainMenuScreen(this);
 	}
@@ -22,16 +25,13 @@ public class Start extends GLGame {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {         
         super.onSurfaceCreated(gl, config);
-        //Resources.resetTopTen(this);
-        Settings.SCALE_HEIGHT = (Settings.WORLD_HEIGHT / getGLGraphics().getHeight());
-        Settings.SCALE_WIDTH = (Settings.WORLD_WIDTH / getGLGraphics().getWidth());
+        Settings.SCALE_HEIGHT = ( getGLGraphics().getHeight() / Settings.WORLD_HEIGHT);
+        Settings.SCALE_WIDTH = ( getGLGraphics().getWidth() / Settings.WORLD_WIDTH);
         Resources.reload();
-    }     
+    }   
     
     @Override
     public void onPause() {
         super.onPause();
-       // if(Settings.soundEnabled)
-            //Assets.music.pause();
     }
 }

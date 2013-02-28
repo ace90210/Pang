@@ -5,29 +5,12 @@ import com.games.androidgames.framework.gl.Texture;
 import com.games.androidgames.framework.gl.TextureRegion;
 import com.games.androidgames.framework.impl.GLGame;
 import com.games.androidgames.framework.gl.Animation;
-import com.games.androidgames.pang.buttons.BlankButton;
-import com.games.androidgames.pang.buttons.CloseButton;
-import com.games.androidgames.pang.buttons.GameButton;
-import com.games.androidgames.pang.buttons.MainMenuButton;
-import com.games.androidgames.pang.buttons.MenuButton;
-import com.games.androidgames.pang.buttons.MuteButton;
-import com.games.androidgames.pang.buttons.PauseButton;
-import com.games.androidgames.pang.buttons.ScoresButton;
-import com.games.androidgames.pang.buttons.SettingsButton;
-import com.games.androidgames.pang.buttons.TouchVisibleButton;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 
 public class Resources {	
@@ -35,10 +18,12 @@ public class Resources {
 	private static final String PREFS_NAME = "PangScores";
 	public static int FIRE, POP, STICK, HIT, BUTTON_HEIGHTLIGHT;
 	public static Texture background;
+	public static Texture backgroundMenu;
 	public static Texture gameItems;
 	public static GLText glText, glButtonText, glScoreText;
 	
 	public static TextureRegion backgroundRegion;
+	public static TextureRegion backgroundMenuRegion;
 	public static TextureRegion ball;
 	public static TextureRegion platform;
 	public static TextureRegion ladder;
@@ -58,6 +43,7 @@ public class Resources {
 	public static TextureRegion controlsA;
 	public static TextureRegion controlsB;
 	
+	public static TextureRegion life;
 	
 	public static Animation playerWalkLeft;
 	public static Animation playerWalkRight;
@@ -69,6 +55,7 @@ public class Resources {
 		game.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		sounds = new SoundPool(20,AudioManager.STREAM_MUSIC, 1);
 		background = new Texture(game, "background.png");
+		backgroundMenu = new Texture(game, "desert.png");
 		gameItems = new Texture(game, "BasicPangSet2.png");
 		
 		try {
@@ -84,11 +71,14 @@ public class Resources {
 		}
 		
 		backgroundRegion = new TextureRegion(background, 0, 0, 512, 256);
+		backgroundMenuRegion = new TextureRegion(backgroundMenu, 0, 49, 512, 256);
 		
 		ball = new TextureRegion(gameItems, 0, 0, 128, 128);
 		powerupSingle =  new TextureRegion(gameItems, 50, 133, 8, 16);
 		powerupDouble = new TextureRegion(gameItems, 50, 133, 16, 16);
 		powerupSticky = new TextureRegion(gameItems, 31, 133, 13, 16);
+		
+		life = new TextureRegion(gameItems, 193, 286, 25, 25);
 		
 		normalSpear = new TextureRegion(gameItems, 368,  0, 9, 245);
 		stickySpear =  new TextureRegion(gameItems, 453,  0, 9, 245);
@@ -140,14 +130,14 @@ public class Resources {
 		glScoreText = new GLText(game.getGLGraphics().getGL(), game.getAssets() );
 		
 		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
-		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
-		glScoreText.load("score.ttf", 22, 2, 2 ); 
+		glButtonText.load( "burgerfont.ttf", 28, 2, 2 ); 
+		glScoreText.load("score2.ttf", 22, 2, 2 ); 
 	}
 	
 	public static void reload() {
 		glText.load( "ARIAL.TTF", 18, 2, 2 ); 
-		glButtonText.load( "AgentOrange.ttf", 28, 2, 2 ); 
-		glScoreText.load( "score.ttf", 22, 2, 2 );
+		glButtonText.load( "burgerfont.ttf", 28, 2, 2 ); 
+		glScoreText.load( "score2.ttf", 22, 2, 2 );
         background.reload();
         gameItems.reload();
         

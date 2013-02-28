@@ -8,13 +8,15 @@ import com.games.androidgames.framework.math.OverlapTester;
 import com.games.androidgames.pang.Settings;
 
 public class Ball extends DynamicGameObject{
-
+	public float bounce;
+	
 	public Ball(float x, float y, float width, float height) {
 		super(x, y, width, height);
-		// TODO Auto-generated constructor stub
+		bounce = 500.0f;
 	}
 	
 	public Ball(float x, float y, float radius) {
 		super(x, y, radius);
+		bounce = 500.0f;
 	}
 }

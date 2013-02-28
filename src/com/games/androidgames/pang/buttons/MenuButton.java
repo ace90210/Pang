@@ -8,7 +8,7 @@ import com.games.androidgames.framework.math.Vector2;
 public abstract class MenuButton {
 	protected final Vector2 position;
 	public Rectangle bounds;
-	public float r, g, b ,a, altR, altG, altB, altA, scale;
+	public float r, g, b ,a, altR, altG, altB, altA, scale, waitTime, lastTimeUsed;
 	public String text;
 	public boolean heightLighted, soundEnabled, enabled;
 	private final GLText glText;
@@ -27,6 +27,8 @@ public abstract class MenuButton {
 		this.altB = 0.0f;
 		this.altA = 1.0f;
 		this.scale = scale;
+		this.waitTime = 200;
+		this.lastTimeUsed = System.nanoTime() / 1000000;
 		this.glText = glText;
 		this.enabled = true;
 		setRectangle(x, y);
@@ -37,18 +39,20 @@ public abstract class MenuButton {
 		this.heightLighted = false;
 		this.soundEnabled = true;
 		this.position = new Vector2(x, y);
-		this.r = 1;
-		this.g = 1;
-		this.b = 1;
+		this.r = 0.1f;
+		this.g = 0.1f;
+		this.b = 0.7f;
 		this.a = 1;
-		this.altR = 0.8f;
-		this.altG = 0.0f;
-		this.altB = 0.0f;
+		this.altR = 0.2f;
+		this.altG = 0.5f;
+		this.altB = 1.0f;
 		this.altA = 1.0f;
 		this.scale = scale;
 		this.glText = glText;	
 		this.enabled = true;
 		glText.setScale(scale);
+		this.waitTime = 200;
+		this.lastTimeUsed = System.nanoTime() / 1000000;
 		float width = glText.getLength(text) ;
 		this.bounds = new Rectangle(x - width / 2, y, width , glText.getHeight());
 	}
@@ -65,6 +69,16 @@ public abstract class MenuButton {
 		float width = glText.getLength(text);
 		this.bounds = new Rectangle(x - width / 2, y, width , this.glText.getHeight());
 	}
+
+	protected void use(){
+		this.lastTimeUsed = System.nanoTime() / 1000000;
+	}
 	
+	public boolean ready(){
+		if(lastTimeUsed - System.nanoTime() > waitTime){
+			return true;
+		}
+		return false;
+	}
 	public abstract void action(Game game);
 }

@@ -26,7 +26,7 @@ public class Player extends DynamicGameObject {
 	private PlayerState playerState, lastState;
 	
 	public Player(float x, float y, float width, float height, int life, Texture texture) {
-		super(x, y, width * Settings.SCALE_WIDTH, height * Settings.SCALE_HEIGHT);
+		super(x, y, width, height);
 		walkingLeft = Resources.playerWalkLeft;
 		walkingRight =  Resources.playerWalkRight;
 		climbing =   Resources.playerClimb;
@@ -61,9 +61,9 @@ public class Player extends DynamicGameObject {
 		if(velocity.y <= 0) {
 			velocity.y = 0;
 		} else {
-			position.add((velocity.x -gravity.x) * Settings.SCALE_WIDTH * deltaTime, (velocity.y - gravity.y) * Settings.SCALE_HEIGHT * deltaTime);
-			bounds.lowerLeft.add((velocity.x -gravity.x) * Settings.SCALE_WIDTH * deltaTime, (velocity.y - gravity.y) * Settings.SCALE_HEIGHT * deltaTime);
-			velocity.add(gravity.x * 3 * Settings.SCALE_WIDTH * deltaTime, gravity.y * 3 * Settings.SCALE_HEIGHT * deltaTime);
+			position.add((velocity.x -gravity.x) * deltaTime, (velocity.y - gravity.y) * deltaTime);
+			bounds.lowerLeft.add((velocity.x -gravity.x) * deltaTime, (velocity.y - gravity.y) * deltaTime);
+			velocity.add(gravity.x * 3 * deltaTime, gravity.y * 3 * deltaTime);
 		}
 		
 		boolean onFloor = onFloor(deltaTime, ladders, objects);
@@ -75,8 +75,8 @@ public class Player extends DynamicGameObject {
 		}
 		
 		if(!onFloor || velocity.y > 0) {
-			position.add(gravity.x * Settings.SCALE_WIDTH * deltaTime, gravity.y * Settings.SCALE_HEIGHT * deltaTime);		
-			bounds.lowerLeft.add(gravity.x * Settings.SCALE_WIDTH * deltaTime, gravity.y * Settings.SCALE_HEIGHT * deltaTime);
+			position.add(gravity.x * deltaTime, gravity.y * deltaTime);		
+			bounds.lowerLeft.add(gravity.x * deltaTime, gravity.y * deltaTime);
 		} 
 	
 		switch(state){
@@ -145,8 +145,8 @@ public class Player extends DynamicGameObject {
 	}
 	
 	public void movePlayer(float x, float y, float deltaTime) {
-		position.add(x * Settings.SCALE_WIDTH * deltaTime, y * Settings.SCALE_HEIGHT * deltaTime);
-		bounds.lowerLeft.add(x * Settings.SCALE_WIDTH * deltaTime, y * Settings.SCALE_HEIGHT * deltaTime);
+		position.add(x * deltaTime, y * deltaTime);
+		bounds.lowerLeft.add(x * deltaTime, y * deltaTime);
 	}
 	
 	public TextureRegion getKeyFrame() {
