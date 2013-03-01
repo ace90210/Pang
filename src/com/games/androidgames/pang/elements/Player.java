@@ -7,6 +7,7 @@ import com.games.androidgames.framework.gl.Texture;
 import com.games.androidgames.framework.gl.Animation;
 import com.games.androidgames.framework.math.OverlapTester;
 import com.games.androidgames.framework.math.Vector2;
+import com.games.androidgames.pang.CurrentGameDetails;
 import com.games.androidgames.pang.Resources;
 import com.games.androidgames.pang.Settings;
 
@@ -19,7 +20,6 @@ public class Player extends DynamicGameObject {
 	private Vector2 gravity;
 	private Animation walkingLeft, walkingRight, climbing;
 	private TextureRegion standing, shooting, hurt, currentState;
-	public int life;	
 	private boolean immune;
 	
 	public static enum PlayerState { WALKING_RIGHT, WALKING_LEFT, STANDING, SHOOTING, HURT, CLIMBING};
@@ -42,7 +42,6 @@ public class Player extends DynamicGameObject {
 		this.gravity = new Vector2(0, 0);
 		this.playerState = PlayerState.STANDING;
 		this.lastState = PlayerState.STANDING;
-		this.life = life;
 	}
 	
 	public void update(float deltaTime, PlayerState state, List<Ladder> ladders, List<GameObject> ... objects) {
@@ -157,13 +156,13 @@ public class Player extends DynamicGameObject {
 		if(!immune){			
 			immune = true;
 			playerState = PlayerState.HURT;
-			life--;
+			CurrentGameDetails.lives--;
 		}		
 		return alive();
 	}
 	
 	public boolean alive(){
-		if(life <= 0) {
+		if(CurrentGameDetails.lives <= 0) {
 			return false;
 		}
 		return true;
@@ -182,7 +181,7 @@ public class Player extends DynamicGameObject {
 		immuneTime = IMMUNE_LIMIT;
 		this.currentState = standing;
 		this.playerState = PlayerState.STANDING;
-		this.life = life;
+		CurrentGameDetails.lives = life;
 		
 	}
 	

@@ -14,6 +14,7 @@ public class TouchControls {
 	private TextureRegion aRegion, bRegion, startRegion, stickRegion;
 	public boolean[] activeButtons;
 	public int left, right, up, down;
+	public float DEADZONE = 25;
 	
 	public TouchControls(Texture texture, float worldWidth, float worldHeight) {
 		touchElements = new ArrayList<TouchElement>();
@@ -23,7 +24,7 @@ public class TouchControls {
 		startRegion = Resources.controlsStart;
 		stickRegion = Resources.controlsJoystick;	
 		
-		touchElements.add(new TouchElement(100, 100,  160,  160, stickRegion));			//joystick	
+		touchElements.add(new TouchElement(110, 110,  175,  175, stickRegion));			//joystick	
 		touchElements.get(0).setBothBoundsBuffers(15);		
 		
 		touchElements.add(new TouchElement(worldWidth - 210, 42, 70, 70, aRegion));		//A

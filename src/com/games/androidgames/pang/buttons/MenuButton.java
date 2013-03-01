@@ -1,5 +1,7 @@
 package com.games.androidgames.pang.buttons;
 
+import java.util.List;
+
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
 import com.games.androidgames.framework.math.Rectangle;
@@ -81,5 +83,55 @@ public abstract class MenuButton {
 		}
 		return false;
 	}
+	
+	public static int findNextButton(int start, List<MenuButton> items){
+		if(start == -1 || start >= items.size()){
+			start = 0;
+			while(!items.get(start).enabled){
+				if(start == items.size() - 1){
+					start = 0;
+				} else {
+						start++;
+				}
+			}
+		} else {
+			do
+			{
+				items.get(start).heightLighted = false;
+				if(start == items.size() - 1){
+					start = 0;
+				} else {
+						start++;
+				}
+			}while(!items.get(start).enabled);	
+		}
+		return start;
+	}
+	
+	public static int findPreviousButton(int start, List<MenuButton> items){
+		if(start < 1){
+			start = items.size() - 1;
+			
+			while(!items.get(start).enabled){
+				if(start == 0){
+					start = items.size() - 1;
+				} else {
+						start--;
+				}
+			}
+		} else { 
+			do
+			{
+				items.get(start).heightLighted = false;
+				if(start == 0){
+					start = items.size() - 1;
+				} else {
+						start--;
+				}
+			}while(!items.get(start).enabled);
+	 	}
+		return start;
+	}
+	
 	public abstract void action(Game game);
 }

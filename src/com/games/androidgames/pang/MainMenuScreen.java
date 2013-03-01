@@ -56,7 +56,7 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		items = new ArrayList<MenuButton>();
 		items.add(new BlankButton("Pang", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 6, camera.zoom * 1.5f));
 		
-		if(Settings.currentLevel != 1){
+		if(CurrentGameDetails.level != 1){
 			items.add(new ContinueButton("Continue", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 5, camera.zoom * 1.5f));
 		}
 		
@@ -64,9 +64,9 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 		
 		items.add(new SettingsButton("Settings", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 3, camera.zoom * 1.5f));
 		
-		items.add(new ScoresButton("Scores", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
+		items.add(new ScoresButton("Scores", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 2, camera.zoom * 1.5f));
 		
-		items.add(new CloseButton("Quit", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6, camera.zoom * 1.5f));
+		items.add(new CloseButton("Quit", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7, camera.zoom * 1.5f));
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);		
 	}
@@ -223,32 +223,12 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 												}													
 												break;
 				case KeyEvent.KEYCODE_DPAD_UP:  {
-													if(selectedMenu == -1){
-														selectedMenu = items.size() - 1;
-													} 
-													do
-													{
-														if(selectedMenu == 0){
-															selectedMenu = items.size() - 1;
-														} else {
-																selectedMenu--;
-														}
-													}while(!items.get(selectedMenu).enabled);
+													selectedMenu = MenuButton.findPreviousButton(selectedMenu, items);
 													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);		
 												}
 												break;
 				case KeyEvent.KEYCODE_DPAD_DOWN: {
-													if(selectedMenu == -1){
-														selectedMenu = 0;
-													} 
-													do
-													{
-														if(selectedMenu == items.size() - 1){
-															selectedMenu = 0;
-														} else {
-																selectedMenu++;
-														}
-													}while(!items.get(selectedMenu).enabled);												
+													selectedMenu = MenuButton.findNextButton(selectedMenu, items);
 													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 												 }
 												

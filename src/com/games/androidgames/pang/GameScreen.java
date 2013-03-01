@@ -48,48 +48,49 @@ import com.games.androidgames.pang.elements.Weapon.MODE;
 public class GameScreen extends Screen implements OnKeyListener, OnTouchListener {
 	Camera2D camera;
 	
-	final float BALL_RADIUS = 16.0f;
-	final float SMALLEST_BALL = 16.0f;
-	final float BUMP = 0.7f;
-	final int SPRITE_LIMIT = 100;
-	final int LIFE_BONUS = 1500;
+	private final float BALL_RADIUS = 16.0f;
+	private final float SMALLEST_BALL = 16.0f;
+	private final float BUMP = 0.7f;
+	private final int SPRITE_LIMIT = 100;
+	private final int LIFE_BONUS = 1500;
 
-	private int selectedMenu, score, topTen;
+	private int topTen;
+	private volatile int selectedMenu;
 
-	float[] x = new float[10];
-	float[] y = new float[10];
-	boolean[] touched = new boolean[10];
-	int[] id = new int[10];
+	private float[] x = new float[10];
+	private float[] y = new float[10];
+	private boolean[] touched = new boolean[10];
+	private int[] id = new int[10];
 	
-	boolean[] pressedKeys = new boolean[128];
-    List<KeyEvent> keyEventsBuffer = new ArrayList<KeyEvent>(); 
+	private boolean[] pressedKeys = new boolean[128];
+	private List<KeyEvent> keyEventsBuffer = new ArrayList<KeyEvent>(); 
     
-	GLGraphics glGraphics;
-	GL10 gl;
-	GLText glText, glMenuText, glScoreText;
+	private GLGraphics glGraphics;
+	private GL10 gl;
+	private GLText glText, glMenuText, glScoreText;
 
 	private List<MenuButton> pauseItems, finishItems;
-	Player player;
-	PowerItem single, doub, stick;
-	Weapon weapon;
+	private Player player;
+	private PowerItem single, doub, stick;
+	private Weapon weapon;
 	
-	PlayerState playerState;
-	Player savedPlayerState;
-	TextureRegion currKeyFrame;		
-	Texture background;
-	TextureRegion backgroundRegion;
-	List<DynamicGameObject> balls;
-	List<GameObject> platforms;
-	List<Ladder> ladders;
-	Texture textureSet;
+	private PlayerState playerState;
+	private Player savedPlayerState;
+	private TextureRegion currKeyFrame;		
+	private Texture background;
+	private TextureRegion backgroundRegion;
+	private List<DynamicGameObject> balls;
+	private List<GameObject> platforms;
+	private List<Ladder> ladders;
+	private Texture textureSet;
 	
-	Level level;
+	private Level level;
 	
-	TextureRegion ballRegion, spearRegion;
-	Vector2 gravity = new Vector2(0, -400);
+	private TextureRegion ballRegion, spearRegion;
+	private Vector2 gravity = new Vector2(0, -400);
 	
-	TouchControls controls;
-	SpriteBatcher batcher;
+	private TouchControls controls;
+	private SpriteBatcher batcher;
 	
 	public GameScreen(Game game) {
 		super(game);
@@ -108,8 +109,6 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 		playerState = PlayerState.STANDING;
 		
-		this.score = 0;
-		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);	
 		pauseItems = new ArrayList<MenuButton>();
 		finishItems = new ArrayList<MenuButton>();
@@ -119,7 +118,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5, camera.zoom * 1.5f);
 		pauseItems.add(exit);	
 		
-		if(Settings.currentLevel < Level.NUMBER_OF_LEVELS) {
+		if(CurrentGameDetails.level < Level.NUMBER_OF_LEVELS) {
 			finishItems.add(new NextLevelButton("Next Level", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
 		} else {
 			finishItems.add(new GameButton("New Game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
@@ -132,7 +131,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	public void resume() {
 			textureSet = Resources.gameItems;
 			level = new Level(textureSet);
-			level.load(game, Settings.currentLevel);
+			level.load(game, CurrentGameDetails.level);
 			
 			balls = level.balls;
 			ladders  = level.ladders;
@@ -173,8 +172,8 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			}
 			switch(event.getKeyCode())
 			{
-				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x
-														if(!player.alive() || balls.size() == 0 && selectedMenu >= 0 && selectedMenu < finishItems.size()){
+				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x														
+														if((!player.alive() || balls.size() == 0) && selectedMenu >= 0 && selectedMenu < finishItems.size()){
 															if(selectedMenu < finishItems.size()){	
 																finishItems.get(selectedMenu).action(game);	
 									            				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
@@ -184,105 +183,47 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 																pauseItems.get(selectedMenu).action(game);	
 																Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 															}
-														}
+														}														
 													}
 												break;
-					case KeyEvent.KEYCODE_BACK:  {
-													//Circle Pressed
-													weapon.mode = Weapon.MODE.STICKY;	
-												 }
+					case KeyEvent.KEYCODE_BACK:  
 												break;
 				case KeyEvent.KEYCODE_BUTTON_X:	{
 														
 												}
 												break;
-				case KeyEvent.KEYCODE_BUTTON_Y: {
-														//Triangle pressed		
-														weapon.mode = Weapon.MODE.DOUBLE;	
-												}													
+				case KeyEvent.KEYCODE_BUTTON_Y: 													
 												break;
 				case KeyEvent.KEYCODE_DPAD_UP:  {
 												 	if(!player.alive() || balls.size() == 0){
-														if(selectedMenu == -1){
-															selectedMenu = finishItems.size() - 1;
-														} 
-														do
-														{
-															finishItems.get(selectedMenu).heightLighted = false;
-															if(selectedMenu == 0){
-																selectedMenu = finishItems.size() - 1;
-															} else {
-																	selectedMenu--;
-															}
-														}while(!finishItems.get(selectedMenu).enabled);
+												 		selectedMenu = MenuButton.findPreviousButton(selectedMenu, finishItems);
 														finishItems.get(selectedMenu).heightLighted = true;
 														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 													}else if(Settings.gamePaused){
-														if(selectedMenu == -1){
-															selectedMenu = pauseItems.size() - 1;
-														} 
-														do
-														{
-															finishItems.get(selectedMenu).heightLighted = false;
-															if(selectedMenu == 0){
-																selectedMenu = pauseItems.size() - 1;
-															} else {
-																	selectedMenu--;
-															}
-														}while(!pauseItems.get(selectedMenu).enabled);
-														finishItems.get(selectedMenu).heightLighted = true;
-														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
+														selectedMenu = MenuButton.findPreviousButton(selectedMenu, pauseItems);
+														pauseItems.get(selectedMenu).heightLighted = true;
+														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);															
 													}
 												}
 												break;
 				case KeyEvent.KEYCODE_DPAD_DOWN: {
-													if(!player.alive() || balls.size() == 0){
-														if(selectedMenu == -1 || selectedMenu > finishItems.size()){
-															selectedMenu = 0;
-														} 
-														do
-														{
-															finishItems.get(selectedMenu).heightLighted = false;
-															if(selectedMenu == finishItems.size() - 1){
-																selectedMenu = 0;
-															} else {
-																	selectedMenu++;
-															}
-														}while(!finishItems.get(selectedMenu).enabled);			
+													if(!player.alive() || balls.size() == 0){															
+														selectedMenu = MenuButton.findNextButton(selectedMenu, finishItems);
 														finishItems.get(selectedMenu).heightLighted = true;
 														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
-													}else if(Settings.gamePaused){
-														if(selectedMenu == -1 || selectedMenu > pauseItems.size()){
-															selectedMenu = 0;
-														} 
-														do
-														{
-															finishItems.get(selectedMenu).heightLighted = false;
-															if(selectedMenu == pauseItems.size() - 1){
-																selectedMenu = 0;
-															} else {
-																	selectedMenu++;
-															}
-														}while(!pauseItems.get(selectedMenu).enabled);	
-														finishItems.get(selectedMenu).heightLighted = true;
+													}else if(Settings.gamePaused){														
+														selectedMenu = MenuButton.findNextButton(selectedMenu, pauseItems);
+														pauseItems.get(selectedMenu).heightLighted = true;
 														Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 													}
 												 }
 												
 												break;
-				case KeyEvent.KEYCODE_DPAD_RIGHT: 	{
-														
-													}
-													
+				case KeyEvent.KEYCODE_DPAD_RIGHT: 														
 												break;
-				case KeyEvent.KEYCODE_DPAD_LEFT:  	{
-														
-													}
+				case KeyEvent.KEYCODE_DPAD_LEFT:  	
 												break;
 				case KeyEvent.KEYCODE_BUTTON_SELECT: 
-														{
-															weapon.mode = Weapon.MODE.SINGLE;	
-														}
 												break;
 				case KeyEvent.KEYCODE_BUTTON_START: 
 													
@@ -308,9 +249,13 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	
 	public void startButtonAction() { {															
 			if(Settings.gamePaused) {					
-				Settings.gamePaused = false;
-			} else {
-				Settings.gamePaused = true;				
+				Settings.gamePaused = false;				
+			} else {				
+				Settings.gamePaused = true;		
+				if(selectedMenu >= 0 && selectedMenu < pauseItems.size()){
+					pauseItems.get(selectedMenu).heightLighted = false;
+					selectedMenu = -1;
+				}
 			}
 		}
     }
@@ -323,54 +268,74 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
     
 	@Override
 	public void update(float deltaTime) {
-		game.getInput().getKeyEvents();		
-		if(controls.activeButtons[3] || keyPressed(KeyEvent.KEYCODE_BUTTON_START)) {
-			pressedKeys[KeyEvent.KEYCODE_BUTTON_START] = false;
-			startButtonAction();			
-		} 
+		game.getInput().getKeyEvents();	
+		game.getInput().getAccelX();
+		game.getInput().getAccelY();
+		game.getInput().getAccelZ();
+		
+		boolean cStart, cUp, cDown, cRight, cLeft, cA, cB, movingUpDown = false;
+		synchronized(controls){
+			 cStart = controls.activeButtons[3];
+			 cA = controls.activeButtons[1];
+			 cB = controls.activeButtons[2];
+			 cUp = controls.up >= 0?true:false;
+			 cDown = controls.down >= 0?true:false;
+			 cLeft = controls.left >= 0?true:false;
+			 cRight = controls.right >= 0?true:false;
+			 controls.activeButtons[3] = false;
+			 controls.activeButtons[1] = false;
+			 controls.activeButtons[2] = false;
+		 }
 		if(selectedMenu != -1){
 			for(int i = 0; i < pauseItems.size(); i++){
 				pauseItems.get(i).heightLighted = false;
 			}
 			pauseItems.get(selectedMenu).heightLighted = true;
 		}
+		if(cStart || keyPressed(KeyEvent.KEYCODE_BUTTON_START)) {
+			pressedKeys[KeyEvent.KEYCODE_BUTTON_START] = false;
+			startButtonAction();			
+		} 
+		
 		
 		if(!Settings.gamePaused) {		
 			playerState = PlayerState.STANDING;
 
 			//move player
-			if((keyPressed(KeyEvent.KEYCODE_DPAD_RIGHT) || controls.right >= 0) && player.position.x + player.bounds.width / 2 < Settings.WORLD_WIDTH) 	{
-				player.movePlayer(200, 0, deltaTime);
-				playerState = PlayerState.WALKING_RIGHT;
-			} else if((keyPressed(KeyEvent.KEYCODE_DPAD_LEFT) || controls.left >= 0) && player.position.x - player.bounds.width / 2 > 0) 	{
-				player.movePlayer(-200, 0, deltaTime);
-				playerState = PlayerState.WALKING_LEFT;
-			} else if((keyPressed(KeyEvent.KEYCODE_DPAD_UP) || controls.up >= 0)) {
+			if((keyPressed(KeyEvent.KEYCODE_DPAD_UP) || cUp)) {
 				for(int i =0; i < ladders.size(); i++) {
 					Ladder ladder = (Ladder)ladders.get(i);
 					if(ladder.upValid(player)) {
 						playerState = PlayerState.CLIMBING;
 						player.movePlayer(0, 200, deltaTime);
+						movingUpDown = true;
 						break;
 					}
 				}
-			} else if((keyPressed(KeyEvent.KEYCODE_DPAD_DOWN) || controls.down >= 0)) {
+			} else if((keyPressed(KeyEvent.KEYCODE_DPAD_DOWN) || cDown)) {
 				for(int i =0; i < ladders.size(); i++) {
 					Ladder ladder = (Ladder)ladders.get(i);
 					if(ladder.downValid(player)) {
 						playerState = PlayerState.CLIMBING;					
 						player.movePlayer(0, -200, deltaTime);
+						movingUpDown = true;
 						break;
 					}
 				}
-			} else{ 
+			} else { 
 				if((weapon.spear.alive && weapon.spear.position.y < 80) || (weapon.stickySpear.position.y < 80 && weapon.stickySpear.alive) || (weapon.spear2.position.y < 80 && weapon.spear2.alive)) {
-					
 					playerState = PlayerState.SHOOTING;
 				} 				
-			}			
+			}	
+			if(!movingUpDown && (keyPressed(KeyEvent.KEYCODE_DPAD_RIGHT) || cRight) && player.position.x + player.bounds.width / 2 < Settings.WORLD_WIDTH) 	{
+				player.movePlayer(200, 0, deltaTime);
+				playerState = PlayerState.WALKING_RIGHT;
+			} else if(!movingUpDown && (keyPressed(KeyEvent.KEYCODE_DPAD_LEFT) || cLeft) && player.position.x - player.bounds.width / 2 > 0) 	{
+				player.movePlayer(-200, 0, deltaTime);
+				playerState = PlayerState.WALKING_LEFT;
+			} 		
 			
-			if((keyPressed(KeyEvent.KEYCODE_DPAD_CENTER) || controls.activeButtons[1])) {
+			if((keyPressed(KeyEvent.KEYCODE_DPAD_CENTER) || cA)) {
 				//reset button to off
 				pressedKeys[KeyEvent.KEYCODE_DPAD_CENTER] = false;					
 				//x pressed - spawn new spear
@@ -381,7 +346,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 					}
 				}
 			} 
-			if((keyPressed(KeyEvent.KEYCODE_BUTTON_X) || controls.activeButtons[2])) {
+			if((keyPressed(KeyEvent.KEYCODE_BUTTON_X) || cB)) {
 				pressedKeys[KeyEvent.KEYCODE_BUTTON_X] = false;
 				//square pressed - jump
 				if(player.onFloor(deltaTime, ladders, platforms)){
@@ -402,7 +367,11 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						player.hit();
 						if(player.alive() == false){
 							selectedMenu = -1;
-							topTen = Resources.checkScore((GLGame)game, score);
+							CurrentGameDetails.level = 1;
+							//replace next level button with new game button
+							finishItems.set(0, new GameButton("New Game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f)); 
+							
+							topTen = Resources.checkScore((GLGame)game, CurrentGameDetails.score);
 						}
 					}
 					
@@ -412,15 +381,21 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						//if ball smaller than smallest ball limit destroy
 						if(ball.boundingCircle.radius < SMALLEST_BALL) {
 							balls.remove(ball);
-							score += 200;
+							CurrentGameDetails.score += 200;
 							if(balls.size() == 0){
 								//add additional score for lives left
-								score += player.life * LIFE_BONUS;
+								CurrentGameDetails.score += CurrentGameDetails.lives * LIFE_BONUS;
+								CurrentGameDetails.score += CurrentGameDetails.level * 1000;
 								selectedMenu = -1;
-								topTen = Resources.checkScore((GLGame)game, score);
+								
+								//if last level save score
+								if(CurrentGameDetails.level == Level.NUMBER_OF_LEVELS){
+									topTen = Resources.checkScore((GLGame)game, CurrentGameDetails.score);
+								}
+								
 							}
 						} else {
-							score += 50;
+							CurrentGameDetails.score += 50;
 							Random rand = new Random();								
 							int prize = rand.nextInt(2)+1;
 							
@@ -512,7 +487,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(single.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, single.bounds)) {
 					weapon.mode = MODE.SINGLE;
-					score += single.value;
+					CurrentGameDetails.score += single.value;
 					single.alive = false;
 				}
 				single.update(deltaTime, platforms);
@@ -520,7 +495,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(doub.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, doub.bounds)) {
 					weapon.mode = MODE.DOUBLE;
-					score += doub.value;
+					CurrentGameDetails.score += doub.value;
 					doub.alive = false;
 				}
 				doub.update(deltaTime, platforms);
@@ -528,7 +503,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			if(stick.alive) {
 				if(OverlapTester.overlapRectangle(player.bounds, stick.bounds)) {
 					weapon.mode = MODE.STICKY;
-					score += stick.value;
+					CurrentGameDetails.score += stick.value;
 					stick.alive = false;
 				}
 				stick.update(deltaTime, platforms);
@@ -536,11 +511,6 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			
 			player.update(deltaTime, playerState, ladders, platforms);
 		}	
-		//reset directions
-		controls.left = -1;
-		controls.right = -1;
-		controls.up = -1;
-		controls.down = -1;
 	}
 
 	@Override
@@ -661,8 +631,10 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 				batcher.drawSprite(ball.position.x, ball.position.y, ball.boundingCircle.radius * 2, ball.boundingCircle.radius * 2, ballRegion);
 			}
 			if(Settings.displayTouchControls) {
-				for(TouchElement element :controls.touchElements) {
-					batcher.drawSprite(element.position.x, element.position.y, element.width, element.height, element.region);
+				synchronized(controls){
+					for(TouchElement element :controls.touchElements) {
+						batcher.drawSprite(element.position.x, element.position.y, element.width, element.height, element.region);
+					}
 				}
 			}
 			batcher.endBatch();
@@ -688,6 +660,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			glText.begin(1, 0, 0, 1);
 			glText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 85);
 			glText.end();
+			
 			for(MenuButton item: finishItems) {
 				glMenuText.setScale(item.scale);
 				if(item.heightLighted){
@@ -719,8 +692,9 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			}
 			glText.begin(0.05f, 0.3f, 0.05f, 1);
 			glText.drawC(text, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 85);
-			glText.drawC("Life Bonus Points: " + player.life + " x " + LIFE_BONUS + " = " + player.life * LIFE_BONUS, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 120);
+			glText.drawC("Life Bonus Points: " + CurrentGameDetails.lives + " x " + LIFE_BONUS + " = " + CurrentGameDetails.lives * LIFE_BONUS, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 120);
 			glText.end();
+			
 			for(MenuButton item: finishItems) {
 				glMenuText.setScale(item.scale);
 				if(item.heightLighted){
@@ -750,7 +724,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		glScoreText.setScale(camera.zoom * 2);
 		glScoreText.begin(0.2f, 0.2f, 0.95f, 1.0f);
-		glScoreText.draw("Score: " + score, 80, Settings.WORLD_HEIGHT - 60);
+		glScoreText.draw("Score: " + CurrentGameDetails.score, 80, Settings.WORLD_HEIGHT - 60);
 		glScoreText.draw("Life: ", Settings.WORLD_WIDTH - 240, Settings.WORLD_HEIGHT - 60);
 		glScoreText.end();
 		
@@ -763,8 +737,10 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						break;
 			default: batcher.drawSprite( 32, Settings.WORLD_HEIGHT - 32, single.bounds.width, single.bounds.height, single.region);
 		}
-		for(int i = 0; i < player.life; i++){
-			batcher.drawSprite( (Settings.WORLD_WIDTH - 96 + (40 * i)), Settings.WORLD_HEIGHT - 32, 32, 32, Resources.life);
+		
+		//draw life level
+		for(int i = 0; i < CurrentGameDetails.lives; i++){
+			batcher.drawSprite( (Settings.WORLD_WIDTH - 112 + (40 * i)), Settings.WORLD_HEIGHT - 32, 32, 32, Resources.life);
 		}
 		batcher.endBatch();                                  
 	}
@@ -776,14 +752,13 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		 synchronized (this) {
-			 controls.resetActiveButtons();
+		 synchronized (this) {			 
+			 
 	            int action = event.getAction() & MotionEvent.ACTION_MASK;
 	            int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
 	            int pointerCount = event.getPointerCount();
@@ -802,36 +777,46 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		                case MotionEvent.ACTION_POINTER_DOWN:
 		                {
 		                	if(!Settings.gamePaused){
-			                	for(int j = 0; j < controls.touchElements.size(); j++) {
-			                		TouchElement element = controls.touchElements.get(j);
-			                		if(element.ready()){		                			
-				                		if(OverlapTester.pointInRectangle(element.bounds, x, y)){				                			
-				    						if(element.ready()){
-				    							controls.activeButtons[j] = true;
-				    							element.use(x, y);
-				    						}
-				    						
-				    						//if hit joystick work out directions
-				    						if(j == 0) {
-				    							float DEADZONE = 20;
-				    							
-				    							//left, right
-				    							if(controls.getElement(ButtonList.STICK).position.x + DEADZONE < x) {
-				    								controls.right = i;
-				    							} else if(controls.getElement(ButtonList.STICK).position.x - DEADZONE > x) {
-				    								controls.left = i;
-				    							}
-				    							
-				    							//up, down
-				    							if(controls.getElement(ButtonList.STICK).position.y + DEADZONE < y) {
-				    								controls.up = i;
-				    							} else if(controls.getElement(ButtonList.STICK).position.y - DEADZONE > y) {
-				    								controls.down = i;
-				    							}
-				    						}
+		                		synchronized(controls){
+				                	for(int j = 0; j < controls.touchElements.size(); j++) {
+				                		TouchElement element = controls.touchElements.get(j);
+				                		if(element.ready()){		                			
+					                		if(OverlapTester.pointInRectangle(element.bounds, x, y)){				                			
+					    						if(element.ready()){
+					    							controls.activeButtons[j] = true;
+					    							element.use(x, y);
+					    						}
+					    						
+					    						//if hit joystick work out directions
+					    						if(j == 0) {
+					    							//up, down
+					    							if(controls.getElement(ButtonList.STICK).position.y + controls.DEADZONE < y) {
+					    								controls.up = pointerId;
+					    							} else if(controls.getElement(ButtonList.STICK).position.y - controls.DEADZONE > y) {
+					    								controls.down = pointerId;
+					    							} else if(controls.up == pointerId) {
+					    								controls.up = -1;
+					    							} else if(controls.down == pointerId) {
+					    								controls.down = -1;
+					    							}
+					    							
+					    							//left, right
+					    							if(controls.getElement(ButtonList.STICK).position.x + controls.DEADZONE < x) {
+					    								controls.right = pointerId;
+					    							} else if(controls.getElement(ButtonList.STICK).position.x - controls.DEADZONE > x) {
+					    								controls.left = pointerId;
+					    							}else if(controls.right == pointerId) {
+					    								controls.right = -1;
+					    							} else if(controls.left == pointerId) {
+					    								controls.left = -1;
+					    							}  		    					
+					    							
+					    							
+					    						}
+					                		}
 				                		}
-			                		}
-			                	}
+				                	}
+		                		}
 		                	}else{
 			                	for(MenuButton item1: pauseItems) {
 			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
@@ -859,20 +844,27 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		                case MotionEvent.ACTION_POINTER_UP:
 		                case MotionEvent.ACTION_CANCEL:
 		                {
-							if(controls.right == i) {
-								controls.right = -1;
-							} else if(controls.left == i) {
-								controls.left = -1;
-							}    							
-							//up, down
-							if(controls.up == i) {
-								controls.up = -1;
-							} else if(controls.down == i) {
-								controls.down = -1;
-							}
+		                	synchronized(controls){
+		                		controls.resetActiveButtons();
+		                		
+		                		//up, down
+								if(controls.up == pointerId) {
+									controls.up = -1;
+								} else if(controls.down == pointerId) {
+									controls.down = -1;
+								}
+		                		//left, right
+								if(controls.right == pointerId) {
+									controls.right = -1;
+								} else if(controls.left == pointerId) {
+									controls.left = -1;
+								}    							
+								
+		                	}
 			    			if(Settings.gamePaused){
 			                	for(MenuButton item1: pauseItems) {
 				                	if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y)) && item1.enabled){
+				                		item1.heightLighted = false;
 				                		item1.action(game);			                    	
 				                    }
 			                	}
@@ -881,16 +873,18 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		                		for(MenuButton item1: finishItems) {
 			                		if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y))){
 			                			if(OverlapTester.pointInRectangle(item1.bounds, new Vector2(x, y)) && item1.enabled){
+			                				item1.heightLighted = false;
 					                		item1.action(game);			                    	
 					                    }		                    	
 				                    } 
 			                	}
 		                	}
-		                } break;
-	
+		                } break;	
 		                case MotionEvent.ACTION_MOVE:
 		                {
+		                	
 		                	synchronized(controls){
+		                		controls.resetActiveButtons();
 			                	for(int j = 0; j < controls.touchElements.size(); j++) {
 			                		TouchElement element = controls.touchElements.get(j);
 			                		if(element.ready()){		                			
@@ -901,30 +895,30 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 				    						}
 				    						
 				    						//if hit joystick work out directions
-				    						if(j == 0) {
-				    							float DEADZONE = 20;
+				    						if(j == 0) {		
 				    							
+				    							//up, down
+				    							if(controls.getElement(ButtonList.STICK).position.y + controls.DEADZONE < y) {
+				    								controls.up = pointerId;
+				    							} else if(controls.getElement(ButtonList.STICK).position.y - controls.DEADZONE > y) {
+				    								controls.down = pointerId;
+				    							} else if(controls.up == pointerId) {
+				    								controls.up = -1;
+				    							} else if(controls.down == pointerId) {
+				    								controls.down = -1;
+				    							}
 				    							//left, right
-				    							if(controls.getElement(ButtonList.STICK).position.x + DEADZONE < x) {
-				    								controls.right = j;
-				    							} else if(controls.getElement(ButtonList.STICK).position.x - DEADZONE > x) {
-				    								controls.left = j;
-				    							}else if(controls.right == i) {
+				    							if(controls.getElement(ButtonList.STICK).position.x + controls.DEADZONE < x) {
+				    								controls.right = pointerId;
+				    							} else if(controls.getElement(ButtonList.STICK).position.x - controls.DEADZONE > x) {
+				    								controls.left = pointerId;
+				    							}else if(controls.right == pointerId) {
 				    								controls.right = -1;
-				    							} else if(controls.left == i) {
+				    							} else if(controls.left == pointerId) {
 				    								controls.left = -1;
 				    							}  		    					
 				    							
-				    							//up, down
-				    							if(controls.getElement(ButtonList.STICK).position.y + DEADZONE < y) {
-				    								controls.up = j;
-				    							} else if(controls.getElement(ButtonList.STICK).position.y - DEADZONE > y) {
-				    								controls.down = j;
-				    							} else if(controls.up == i) {
-				    								controls.up = -1;
-				    							} else if(controls.down == i) {
-				    								controls.down = -1;
-				    							}
+				    							
 				    						}
 				                		}
 			                		}
@@ -961,7 +955,5 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	            }
 	            return true;
 	        }
-	    }
-	
-	
+	    }	
 }

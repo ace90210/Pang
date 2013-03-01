@@ -21,6 +21,7 @@ public class PauseButton extends MenuButton {
 			} else {
 				Settings.gamePaused = true;
 				this.text = "Pause";
+				this.heightLighted = false;
 				this.setRectangle(this.position.x, this.position.y);
 			}
 			this.use();

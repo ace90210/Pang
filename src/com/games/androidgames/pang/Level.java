@@ -42,6 +42,7 @@ public class Level {
 						
 						background = Resources.background;
 						backgroundRegion =  Resources.backgroundRegion;
+						
 					} break;
 			case 2: {					
 						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
@@ -53,10 +54,10 @@ public class Level {
 						backgroundRegion =  Resources.backgroundRegion;
 					} break;
 			case 3: {					
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
 						
 						for(DynamicGameObject ball: balls) {
 							ball.velocity.x = 155;
@@ -67,49 +68,50 @@ public class Level {
 						backgroundRegion =  Resources.backgroundMenuRegion;
 					} break;
 			case 4:  {					
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
 						
 						for(DynamicGameObject ball: balls) {
 							ball.velocity.x = 155;
 							((Ball)ball).bounce = 450;
 						}						
 						
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3, Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
 						
-						for(DynamicGameObject ball: balls) {
-							ball.velocity.x = -155;
-							((Ball)ball).bounce = 450;
+						for(int i = 4; i < 8; i++) {
+							balls.get(i).velocity.x = -155;
+							((Ball)balls.get(i)).bounce = 450;
 						}		
 						
 						background = Resources.background;
 						backgroundRegion =  Resources.backgroundRegion;
 					} break;
 			case 5:	{					
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 + (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
 						
 						for(DynamicGameObject ball: balls) {
 							ball.velocity.x = 155;
 							((Ball)ball).bounce = 450;
 						}						
 						
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3, Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
-						balls.add(new Ball(Settings.WORLD_WIDTH / 4 * 3 - (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 100.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f * 2), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
+						balls.add(new Ball(Settings.WORLD_WIDTH / 3 * 2 - (BALL_RADIUS * 2.5f * 3), Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
 						
-						for(DynamicGameObject ball: balls) {
-							ball.velocity.x = -155;
-							((Ball)ball).bounce = 450;
-						}		
+						for(int i = 4; i < 8; i++) {
+							balls.get(i).velocity.x = -155;
+							((Ball)balls.get(i)).bounce = 450;
+						}	
+						
 						balls.add(new Ball(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 182.0f, BALL_RADIUS * 2));
 						
 						background = Resources.backgroundMenu;

@@ -235,32 +235,12 @@ public class SettingsScreen extends Screen implements OnTouchListener, OnKeyList
 												}													
 												break;
 				case KeyEvent.KEYCODE_DPAD_UP:  {
-													if(selectedMenu == -1){
-														selectedMenu = items.size() - 1;
-													} 
-													do
-													{
-														if(selectedMenu == 0){
-															selectedMenu = items.size() - 1;
-														} else {
-																selectedMenu--;
-														}
-													}while(!items.get(selectedMenu).enabled);
+													selectedMenu = MenuButton.findPreviousButton(selectedMenu, items);
 													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);		
 												}
 												break;
 				case KeyEvent.KEYCODE_DPAD_DOWN: {
-													if(selectedMenu == -1){
-														selectedMenu = 0;
-													} 
-													do
-													{
-														if(selectedMenu == items.size() - 1){
-															selectedMenu = 0;
-														} else {
-																selectedMenu++;
-														}
-													}while(!items.get(selectedMenu).enabled);												
+													selectedMenu = MenuButton.findNextButton(selectedMenu, items);											
 													Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);	
 												 }
 												
