@@ -50,8 +50,8 @@ public class Level {
 						balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
 						balls.get(1).velocity.x = 125;			
 						
-						background = Resources.background;
-						backgroundRegion =  Resources.backgroundRegion;
+						background = Resources.level2;
+						backgroundRegion =  Resources.level2Region;
 					} break;
 			case 3: {					
 						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
@@ -64,8 +64,8 @@ public class Level {
 							((Ball)ball).bounce = 450;
 						}						
 						
-						background = Resources.backgroundMenu;
-						backgroundRegion =  Resources.backgroundMenuRegion;
+						background = Resources.level3;
+						backgroundRegion =  Resources.level3Region;
 					} break;
 			case 4:  {					
 						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));
@@ -88,8 +88,8 @@ public class Level {
 							((Ball)balls.get(i)).bounce = 450;
 						}		
 						
-						background = Resources.background;
-						backgroundRegion =  Resources.backgroundRegion;
+						background = Resources.level4;
+						backgroundRegion =  Resources.level4Region;
 					} break;
 			case 5:	{					
 						balls.add(new Ball(Settings.WORLD_WIDTH / 3, Settings.WORLD_HEIGHT - 50.0f, BALL_RADIUS));

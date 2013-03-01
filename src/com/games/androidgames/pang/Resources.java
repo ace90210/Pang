@@ -18,12 +18,20 @@ public class Resources {
 	private static final String PREFS_NAME = "PangScores";
 	public static int FIRE, POP, STICK, HIT, BUTTON_HEIGHTLIGHT;
 	public static Texture background;
+	public static Texture level2;
+	public static Texture level3;
+	public static Texture level4;	
 	public static Texture backgroundMenu;
 	public static Texture gameItems;
 	public static GLText glText, glButtonText, glScoreText;
 	
 	public static TextureRegion backgroundRegion;
+	public static TextureRegion level2Region;
+	public static TextureRegion level3Region;
+	public static TextureRegion level4Region;
 	public static TextureRegion backgroundMenuRegion;
+	
+	
 	public static TextureRegion ball;
 	public static TextureRegion platform;
 	public static TextureRegion ladder;
@@ -55,6 +63,9 @@ public class Resources {
 		game.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		sounds = new SoundPool(20,AudioManager.STREAM_MUSIC, 1);
 		background = new Texture(game, "background.png");
+		level2 = new Texture(game, "level2D.png");
+		level3 = new Texture(game, "level3D.png");
+		level4 = new Texture(game, "level4D.png");
 		backgroundMenu = new Texture(game, "desert.png");
 		gameItems = new Texture(game, "BasicPangSet2.png");
 		
@@ -71,6 +82,9 @@ public class Resources {
 		}
 		
 		backgroundRegion = new TextureRegion(background, 0, 0, 512, 256);
+		level2Region = new TextureRegion(level2, 0, 0, 351, 245);
+		level3Region = new TextureRegion(level3, 0, 0, 351, 245);
+		level4Region = new TextureRegion(level4, 0, 0, 351, 245);
 		backgroundMenuRegion = new TextureRegion(backgroundMenu, 0, 49, 512, 256);
 		
 		ball = new TextureRegion(gameItems, 0, 0, 128, 128);
