@@ -17,7 +17,7 @@ public class Start extends GLGame {
 	public Screen getStartScreen() {
         Settings.SCALE_HEIGHT = ( getGLGraphics().getHeight() / Settings.WORLD_HEIGHT);
         Settings.SCALE_WIDTH = ( getGLGraphics().getWidth() / Settings.WORLD_WIDTH);
-	    
+        Settings.currentLevel = 1;
 		Resources.load(this);
 	    return new MainMenuScreen(this);
 	}

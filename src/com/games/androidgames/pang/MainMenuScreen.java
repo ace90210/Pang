@@ -23,6 +23,7 @@ import com.games.androidgames.framework.gl.Camera2D;
 import com.games.androidgames.framework.gl.SpriteBatcher;
 import com.games.androidgames.pang.buttons.BlankButton;
 import com.games.androidgames.pang.buttons.CloseButton;
+import com.games.androidgames.pang.buttons.ContinueButton;
 import com.games.androidgames.pang.buttons.GameButton;
 import com.games.androidgames.pang.buttons.MenuButton;
 import com.games.androidgames.pang.buttons.ScoresButton;
@@ -53,11 +54,15 @@ public class MainMenuScreen extends Screen implements OnKeyListener, OnTouchList
 
 		selectedMenu = -1;
 		items = new ArrayList<MenuButton>();
-		items.add(new BlankButton("Pang", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 5, camera.zoom * 1.5f));
+		items.add(new BlankButton("Pang", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 6, camera.zoom * 1.5f));
 		
-		items.add(new GameButton("Start", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 4, camera.zoom * 1.5f));
+		if(Settings.currentLevel != 1){
+			items.add(new ContinueButton("Continue", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 5, camera.zoom * 1.5f));
+		}
 		
-		items.add(new SettingsButton("Settings", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 3, camera.zoom * 1.5f));
+		items.add(new GameButton("Start New Game", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 4, camera.zoom * 1.5f));		
+		
+		items.add(new SettingsButton("Settings", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 7 * 3, camera.zoom * 1.5f));
 		
 		items.add(new ScoresButton("Scores", glText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 6 * 2, camera.zoom * 1.5f));
 		

@@ -3,18 +3,21 @@ package com.games.androidgames.pang.buttons;
 import com.games.androidgames.framework.GLText;
 import com.games.androidgames.framework.Game;
 import com.games.androidgames.pang.GameScreen;
+import com.games.androidgames.pang.Level;
 import com.games.androidgames.pang.Settings;
 
-public class GameButton extends MenuButton {
+public class NextLevelButton extends MenuButton {
 	public boolean active = false;
-	public GameButton(String text, GLText glText, float x, float y,	float scale) {
+	public NextLevelButton(String text, GLText glText, float x, float y,	float scale) {
 		super(text, glText, x, y, scale);
 	}
 
 	@Override
 	public void action(Game game) {
 		Settings.gamePaused = false;
-		Settings.currentLevel = 1;
+		if(Settings.currentLevel < Level.NUMBER_OF_LEVELS){
+			Settings.currentLevel++;
+		}
 		game.setScreen(new GameScreen(game));		
 	}
 }

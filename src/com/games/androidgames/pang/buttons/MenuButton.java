@@ -28,7 +28,7 @@ public abstract class MenuButton {
 		this.altA = 1.0f;
 		this.scale = scale;
 		this.waitTime = 200;
-		this.lastTimeUsed = System.nanoTime() / 1000000;
+		this.lastTimeUsed = 0;
 		this.glText = glText;
 		this.enabled = true;
 		setRectangle(x, y);
@@ -52,7 +52,7 @@ public abstract class MenuButton {
 		this.enabled = true;
 		glText.setScale(scale);
 		this.waitTime = 200;
-		this.lastTimeUsed = System.nanoTime() / 1000000;
+		this.lastTimeUsed = 0;
 		float width = glText.getLength(text) ;
 		this.bounds = new Rectangle(x - width / 2, y, width , glText.getHeight());
 	}
@@ -75,7 +75,8 @@ public abstract class MenuButton {
 	}
 	
 	public boolean ready(){
-		if(lastTimeUsed - System.nanoTime() > waitTime){
+		float currTime = System.nanoTime() / 1000000;
+		if(currTime - lastTimeUsed > waitTime){
 			return true;
 		}
 		return false;

@@ -30,6 +30,7 @@ import com.games.androidgames.pang.buttons.BlankButton;
 import com.games.androidgames.pang.buttons.GameButton;
 import com.games.androidgames.pang.buttons.MainMenuButton;
 import com.games.androidgames.pang.buttons.MenuButton;
+import com.games.androidgames.pang.buttons.NextLevelButton;
 import com.games.androidgames.pang.buttons.PauseButton;
 import com.games.androidgames.pang.buttons.ScoresButton;
 import com.games.androidgames.pang.elements.Ball;
@@ -82,6 +83,8 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	List<Ladder> ladders;
 	Texture textureSet;
 	
+	Level level;
+	
 	TextureRegion ballRegion, spearRegion;
 	Vector2 gravity = new Vector2(0, -400);
 	
@@ -104,16 +107,8 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		topTen = -1;
 		camera = new Camera2D(glGraphics, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 		playerState = PlayerState.STANDING;
-		balls = new ArrayList<DynamicGameObject>();
-		ladders  = new ArrayList<Ladder>();
-		platforms = new ArrayList<GameObject>();
 		
-		balls.add(new Ball(Settings.WORLD_WIDTH / 4, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
 		this.score = 0;
-		
-		for(DynamicGameObject ball: balls) {
-			ball.velocity.x = 100;
-		}
 		
 		batcher = new SpriteBatcher(gl, SPRITE_LIMIT);	
 		pauseItems = new ArrayList<MenuButton>();
@@ -123,7 +118,12 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		
 		MenuButton exit = new MainMenuButton("Exit game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5, camera.zoom * 1.5f);
 		pauseItems.add(exit);	
-		finishItems.add(new GameButton("New Game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		
+		if(Settings.currentLevel < Level.NUMBER_OF_LEVELS) {
+			finishItems.add(new NextLevelButton("Next Level", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		} else {
+			finishItems.add(new GameButton("New Game", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 3, camera.zoom * 1.5f));
+		}
 		finishItems.add(new ScoresButton("View Scoreboard", glMenuText, Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 5 * 2, camera.zoom * 1.5f));
 		finishItems.add(exit);
 	}
@@ -131,6 +131,15 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 	@Override
 	public void resume() {
 			textureSet = Resources.gameItems;
+			level = new Level(textureSet);
+			level.load(game, Settings.currentLevel);
+			
+			balls = level.balls;
+			ladders  = level.ladders;
+			platforms = level.platforms;
+			background = level.background;
+			backgroundRegion =  level.backgroundRegion;
+			
 			if(savedPlayerState == null) {
 				player = new Player(camera.position.x, 35, 64, 70, 3, textureSet);
 				player.setGravity(0, -400);
@@ -149,13 +158,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			TextureRegion stickyRegion = Resources.powerupSticky;
 			stick = new PowerItem(stickyRegion, 100, 400, 40, 48, 2.5f, MODE.STICKY);
 			
-			ladders.add(new Ladder(textureSet, 250, 100, 50, 200));
-			ladders.add(new Ladder(textureSet, 450, 145, 50, 300));
-			
-			platforms.add(new Platform(textureSet, 300, 288, 300, 16));	
-			
-			background = Resources.background;
-			backgroundRegion =  Resources.backgroundRegion;
+
 			
 			controls = new TouchControls(textureSet, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT);
 	}
@@ -171,12 +174,12 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			switch(event.getKeyCode())
 			{
 				case KeyEvent.KEYCODE_DPAD_CENTER: 	{	//x
-														if(!player.alive() || balls.size() == 0 && selectedMenu != -1){
+														if(!player.alive() || balls.size() == 0 && selectedMenu >= 0 && selectedMenu < finishItems.size()){
 															if(selectedMenu < finishItems.size()){	
 																finishItems.get(selectedMenu).action(game);	
 									            				Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
 															}
-														}else if(Settings.gamePaused && selectedMenu != -1){
+														}else if(Settings.gamePaused && selectedMenu >= 0 && selectedMenu < pauseItems.size()){
 															if(selectedMenu < pauseItems.size()){																
 																pauseItems.get(selectedMenu).action(game);	
 																Resources.playSound(Resources.BUTTON_HEIGHTLIGHT);
@@ -303,23 +306,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		return validKey;
 	}
 	
-	public void startButtonAction() {
-    	//if end of game reset else toggle pause
-		player.velocity.set(0, 0);
-		if(balls.size() == 0 || !player.alive()) {
-			Settings.gamePaused = false; 
-			//spawn new ball
-			synchronized(balls) {
-				balls.clear();
-				score = 0;
-				if(!Settings.gamePaused) {
-					balls.add(new Ball(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT - 32.0f, BALL_RADIUS * 2));
-					balls.get(balls.size() - 1).velocity.x = 150;																		
-				}
-				player.reset(Settings.WORLD_WIDTH / 2, 50, 3);	
-				weapon.mode = MODE.SINGLE;
-			}
-		} else {															
+	public void startButtonAction() { {															
 			if(Settings.gamePaused) {					
 				Settings.gamePaused = false;
 			} else {
@@ -414,6 +401,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 						}
 						player.hit();
 						if(player.alive() == false){
+							selectedMenu = -1;
 							topTen = Resources.checkScore((GLGame)game, score);
 						}
 					}
@@ -428,6 +416,7 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 							if(balls.size() == 0){
 								//add additional score for lives left
 								score += player.life * LIFE_BONUS;
+								selectedMenu = -1;
 								topTen = Resources.checkScore((GLGame)game, score);
 							}
 						} else {
@@ -567,23 +556,24 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 		batcher.beginBatch(background);
 		batcher.drawSprite(Settings.WORLD_WIDTH / 2, Settings.WORLD_HEIGHT / 2, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT, backgroundRegion);
 		batcher.endBatch();
+		
+		if(platforms.size() > 0 || ladders.size() > 0){
+			batcher.beginBatch(textureSet);
+			for(int i = 0; i < platforms.size(); i++) {
+				Platform platform = (Platform)platforms.get(i);
+				for(GameObject tile: platform.tiles) {
+					batcher.drawSprite(tile.position.x, tile.position.y, tile.bounds.width, tile.bounds.height, platform.tileRegion);
+				}		
+			}
 			
-		batcher.beginBatch(textureSet);
-		for(int i = 0; i < platforms.size(); i++) {
-			Platform platform = (Platform)platforms.get(i);
-			for(GameObject tile: platform.tiles) {
-				batcher.drawSprite(tile.position.x, tile.position.y, tile.bounds.width, tile.bounds.height, platform.tileRegion);
-			}		
+			for(int i = 0; i < ladders.size(); i++) {
+				Ladder ladder = (Ladder)ladders.get(i);
+				for(GameObject tile: ladder.tiles) {
+					batcher.drawSprite(tile.position.x, tile.position.y, tile.bounds.width, tile.bounds.height, ladder.tileRegion);
+				}		
+			}
+			batcher.endBatch();
 		}
-		
-		for(int i = 0; i < ladders.size(); i++) {
-			Ladder ladder = (Ladder)ladders.get(i);
-			for(GameObject tile: ladder.tiles) {
-				batcher.drawSprite(tile.position.x, tile.position.y, tile.bounds.width, tile.bounds.height, ladder.tileRegion);
-			}		
-		}
-		batcher.endBatch();
-		
 		
 		if(single.alive) {
 			batcher.beginBatch(textureSet);
