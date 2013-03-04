@@ -292,13 +292,12 @@ public class GameScreen extends Screen implements OnKeyListener, OnTouchListener
 			}
 			pauseItems.get(selectedMenu).heightLighted = true;
 		}
-		if(cStart || keyPressed(KeyEvent.KEYCODE_BUTTON_START)) {
-			pressedKeys[KeyEvent.KEYCODE_BUTTON_START] = false;
-			startButtonAction();			
-		} 
 		
-		
-		if(!Settings.gamePaused) {		
+		if(!Settings.gamePaused) {
+			if(cStart || keyPressed(KeyEvent.KEYCODE_BUTTON_START)) {
+				pressedKeys[KeyEvent.KEYCODE_BUTTON_START] = false;
+				startButtonAction();			
+			} 
 			playerState = PlayerState.STANDING;
 
 			//move player
