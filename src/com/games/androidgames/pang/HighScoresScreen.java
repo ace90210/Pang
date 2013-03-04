@@ -140,8 +140,8 @@ public class HighScoresScreen extends Screen implements OnTouchListener, OnKeyLi
 	                    // point
 	                    continue;
 	                }
-	                float x = event.getX(i) * Settings.SCALE_HEIGHT;
-	                float y =  (glGraphics.getHeight() - event.getY(i)) * Settings.SCALE_HEIGHT;
+	                float x = event.getX(i) / Settings.SCALE_WIDTH;
+	                float y =  (glGraphics.getHeight() - event.getY(i)) / Settings.SCALE_HEIGHT;
 	                switch (action) {
 		                case MotionEvent.ACTION_DOWN:
 		                case MotionEvent.ACTION_POINTER_DOWN:
