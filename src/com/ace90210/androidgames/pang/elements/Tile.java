@@ -1,0 +1,13 @@
+package com.ace90210.androidgames.pang.elements;
+
+import java.util.List;
+
+import com.ace90210.androidgames.framework.GameObject;
+
+public class Tile extends GameObject {
+
+	public Tile(float x, float y, float width, float height) {
+		super(x, y, width, height);
+		// TODO Auto-generated constructor stub
+	}
+}
